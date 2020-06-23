@@ -14,8 +14,6 @@
 
 ## 개발 이력
 
-### 2020.06.19 - GitHub 최초 커밋
-
 ### 2020.06.08 - 개발 - 엑셀 POI 업로드 기능 추가
 
 - poi, poi-ooxml, commons-io 라이브러리 추가
@@ -48,3 +46,4 @@
 
    ```JAVA_OPTS="-Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -server -Xms512m -Xmx1024m"```
 
+### 2020.06.23 - GitHub 최초 커밋
