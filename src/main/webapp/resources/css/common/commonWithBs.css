@@ -1,0 +1,62 @@
+:invalid{
+	background-color: lemonchiffon;
+}
+:disabled {
+	background-color: #EBEBE4;
+	
+}
+
+
+/* 데이터 조회시 로더 표시 css
+ * 로딩이 걸리는 모든 화면의 로딩 사용 */
+#loader {
+	/* 로더 디자인 출처:w3schools*/
+    border: 7px solid #f3f3f3; /* Light grey */
+    border-top: 7px solid #008CD6;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    /* 로더를 위치한 div 정중앙으로 정렬 */
+	position: absolute;
+	z-index: 10001;
+	top: 45%;
+	left: 50%;
+	display: none;
+}
+/* 데이터 조회시 로더 표시 css */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* table안에서 내용이 길어지면 개행되지 않고 ...으로 표시 */
+.td-ellipsis {
+	max-width: 100px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+/* 조회조건용 테이블 css */
+.table-search, .table-search-sub {
+    border-collapse: collapse;
+    text-align: left;
+    line-height: 1;
+	width: 100%;
+}
+.table-search th, .table-search-sub th {
+    padding: 5px 5px 5px 5px;
+    text-align: center;
+    vertical-align: middle;
+    background: #F9F9F9;
+    border: 1px solid #ccc;
+    height: 33px;
+	line-height: 1.82857143;
+    color: #333;
+    font-size: 12px;
+}
+.table-search td, .table-search-sub td {
+    padding: 0;
+    border: 1px solid #ccc;
+    font-size: 12px;
+}

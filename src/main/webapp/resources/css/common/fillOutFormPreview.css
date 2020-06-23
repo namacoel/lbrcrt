@@ -1,0 +1,61 @@
+table {
+	width: 645px;
+	bordercolor:#666666;
+	border-collapse: collapse;
+	border: 2px solid;
+	margin: 0 auto;
+	padding: 0;
+}
+
+th, td {
+	bordercolor:#666666;
+	border-collapse: collapse;
+	border: 1px solid;
+	height: 25px;
+	padding: 0px;
+/* 	margin: 0px; */
+}
+th {
+	background-color:#E1E8ED;
+	text-align: center;
+	font-size: 12px;
+}
+td {
+	text-align: center;
+	font-size: 12px;
+}
+input[type="text"] {
+	border: 0px;
+	width: 90%;
+	font-size: 12px;
+	text-align: center;
+}
+.table-fam {
+	height: 100%;
+	width: 445px;
+	border-right: 0;
+}
+.table-certi {
+	height: 100%;
+	width: 200px;
+	border-left: 0;
+}
+.td-vtop {
+	vertical-align: top;
+}
+
+.item-contents {
+	padding: 0px;
+	text-align: center;
+}
+.noborder {
+	border:0px;
+}
+.margin-bottom10 {
+	margin-bottom: 10px;
+}
+.font-title {
+	font-size: 30px;
+	font-weight: bold;
+/* 	text-decoration: underline; */
+}

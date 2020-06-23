@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lbrcrt.mapper.commonMapper">
+	<!-- 공통코드에서 코드값을 가져오는 쿼리 -->
+	<select id="getCommonCode" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			CODE_ID
+			, CODE
+			, CODE_NM
+			, SORT_ORDER
+			, ETC1
+			, ETC2
+			, ETC3
+		FROM
+			lbcmmcode
+ 	]]>
+		WHERE CODE_ID = #{codeId}
+			AND USE_YN = 'Y'
+		ORDER BY SORT_ORDER, CODE_NM
+	</select>
+	<!-- 공통주소 가져오는 쿼리 -->
+	<select id="getCommonAddr" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			UPPER_ADDR_ID
+			, ADDR_ID
+			, ADDR_NM
+			, USE_YN
+			, SORT_ORDER
+		FROM LBCMMADDR	
+ 	]]>
+		WHERE USE_YN = 'Y'
+		ORDER BY UPPER_ADDR_ID, SORT_ORDER, ADDR_NM
+	</select>
+	<!-- 사업장 코드를 가져오는 쿼리 -->
+	<select id="getBizarea" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			CD_BIZAREA
+			, CD_COMPANY
+			, NM_BIZAREA
+			, NM_BIZAREA_L1
+		FROM LBCMMBIZAREA
+		WHERE CD_COMPANY = '1000'
+			--AND TRIM(DT_TOPEN) IS NULL /*OR DT_TOPEN > '20140303'*/
+ 	]]>
+		ORDER BY CD_BIZAREA
+	</select>
+	<!-- 사업장 코드를 가져오는 쿼리 -->
+	<select id="getDept" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT 
+			A.H_DEPT
+			, B.NM_DEPT PAR_NM_DEPT
+			, A.LB_DEPT
+			, A.CD_BIZAREA
+			, A.CD_DEPT
+			, LPAD(' ', 4*(LEVEL-1)) || A.NM_DEPT NM_DEPT
+		FROM LBCMMDEPT A LEFT OUTER JOIN LBCMMDEPT B ON A.H_DEPT = B.CD_DEPT
+		--WHERE TRIM(A.DT_END) IS NULL /*OR DT_TOPEN > '20140303'*/
+		START WITH A.H_DEPT IS NULL
+		CONNECT BY PRIOR A.CD_DEPT = A.H_DEPT
+		ORDER SIBLINGS BY A.CD_BIZAREA
+ 	]]>
+	</select>
+</mapper>

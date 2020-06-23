@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lbrcrt.mapper.itCenterCheckMapper">
+	<!-- 센터 점검 결과 다중 INSERT -->
+	<insert id="insertListCenterCheck" parameterType="hashmap">
+		INSERT INTO LBITCHECKCENTER (
+			CHECK_DATE
+			, CENTER_CD
+			, DEVICE_CD
+			, CHECK_ITEM_CD
+			, RESULT_CD
+			, CONTENTS
+			, ETC1
+			, MODIFIER_ID
+			, MODIFIED_DT
+		)
+		(
+		<foreach collection="mapList" item="item" separator="UNION ALL">
+		SELECT 
+			CAST(#{item.checkDate} as varchar(8)) CHECK_DATE
+			, CAST(#{item.centerCd} as varchar(2)) CENTER_CD
+			, CAST(#{item.deviceCd} as varchar(40)) DEVICE_CD
+			, CAST(#{item.checkItemCd} as varchar(2)) CHECK_ITEM_CD
+			, CAST(#{item.resultCd} as varchar(2)) RESULT_CD
+			, CAST(#{item.contents} as nvarchar(1000)) CONTENTS
+			, CAST(#{item.etc1} as nvarchar(500)) ETC1
+			, CAST(#{loginId} as varchar(20)) MODIFIER_ID
+			, SYSDATE MODIFIED_DT
+		FROM DUAL
+		</foreach>
+		)
+	</insert>
+	
+	<!-- 센터 점검 결과 조회-->
+	<select id="selectCenterCheck" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT 
+			CHECK_DATE
+			, CENTER_CD
+			, FN_CMM_NM('CCLOCATION', CENTER_CD) CENTER_NM
+			, DEVICE_CD
+			, FN_CMM_NM('CCDEVICE', DEVICE_CD) DEVICE_NM
+			, CHECK_ITEM_CD
+			, FN_CMM_NM('CCCHECKITEM', CHECK_ITEM_CD) CHECK_ITEM_NM
+			, RESULT_CD
+			, FN_CMM_NM('OXSTTS', RESULT_CD) RESULT_NM
+			, CONTENTS
+			, ETC1
+			, MODIFIER_ID
+			, MODIFIED_DT
+		FROM LBITCHECKCENTER
+	]]>
+		WHERE CHECK_DATE = #{checkDate}
+			AND CENTER_CD = #{centerCd}
+	</select>
+	
+</mapper>

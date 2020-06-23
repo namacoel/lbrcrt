@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lbrcrt.mapper.employeeStatusMapper">
+	<!-- SELECT 일 운영 인원 현황 -->
+	<select id="selectEmployeeStatus" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+	SELECT
+		CD_COMPANY
+		, CD_BIZAREA
+		, INPUT_DATE
+		, EXTRACT(TO_DATE(INPUT_DATE, 'YYYYMMDD'), 'DAYOFWEEK') DAY_WEEK
+		, CHANGE_CNT
+		, MOVE_CNT
+		, T_CHANGE_CNT
+		, T_MOVE_CNT
+		, PUT_CNT
+		, MEMO
+	FROM LBRCEMPLOYEESTATUS
+	]]>
+	WHERE CD_COMPANY = #{srchCdCompny}
+		AND CD_BIZAREA = #{srchCdBizarea}
+		AND INPUT_DATE like #{srchDate}||'%'
+	ORDER BY CD_COMPANY, CD_BIZAREA, INPUT_DATE
+	</select>
+	<!-- SELECT ONE 일 운영 인원 현황 -->
+	<select id="selectOneEmployeeStatus" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+	SELECT
+		CD_COMPANY
+		, CD_BIZAREA
+		, INPUT_DATE
+		, EXTRACT(TO_DATE(INPUT_DATE, 'YYYYMMDD'), 'DAYOFWEEK') DAY_WEEK
+		, CHANGE_CNT
+		, MOVE_CNT
+		, T_CHANGE_CNT
+		, T_MOVE_CNT
+		, PUT_CNT
+		, MEMO
+	FROM LBRCEMPLOYEESTATUS
+	]]>
+	WHERE CD_COMPANY = #{cdCompany}
+		AND CD_BIZAREA = #{cdBizarea}
+		AND INPUT_DATE like #{inputDate}||'%'
+	ORDER BY CD_COMPANY, CD_BIZAREA, INPUT_DATE
+	</select>
+	<!-- INSERT 일 운영인원 -->
+	<insert id="insertEmployeeStatus" parameterType="hashmap">
+	INSERT INTO LBRCEMPLOYEESTATUS
+		(
+			CD_COMPANY
+			, CD_BIZAREA
+			, INPUT_DATE
+			, CHANGE_CNT
+			, MOVE_CNT
+			, T_CHANGE_CNT
+			, T_MOVE_CNT
+			, PUT_CNT
+			, MODIFIER_ID
+			, MEMO
+		) VALUES (
+			#{cdCompany}
+			, #{cdBizarea}
+			, #{inputDate}
+			, #{changeCnt}
+			, #{moveCnt}
+			, #{tChangeCnt}
+			, #{tMoveCnt}
+			, #{putCnt}
+			, #{loginId}
+			, #{memo}
+		)
+	</insert>
+	<!-- UPDATE 일 운영인원 -->
+	<update id="updateEmployeeStatus" parameterType="hashmap">
+	UPDATE LBRCEMPLOYEESTATUS SET
+		CHANGE_CNT = #{changeCnt}
+		, MOVE_CNT = #{moveCnt}
+		, T_CHANGE_CNT = #{tChangeCnt}
+		, T_MOVE_CNT = #{tMoveCnt}
+		, PUT_CNT = #{putCnt}
+		, MODIFIER_ID = #{loginId}
+		, MEMO = #{memo}
+	WHERE CD_COMPANY = #{cdCompany}
+		AND CD_BIZAREA =  #{cdBizarea}
+		AND INPUT_DATE = #{inputDate}
+	</update>
+	
+	
+	<!-- SELECT 월 운영인원 조회 -->
+	<select id="selectEmployeeStatistics" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+	SELECT
+		CD_COMPANY
+		, CD_BIZAREA
+		, INPUT_MONTH
+		, MONTH_TO_CNT
+		, BEGIN_EMPLOYEE_CNT
+		, END_EMPLOYEE_CNT
+		, BEGIN_TRAINEE_CNT
+		, END_TRAINEE_CNT
+	FROM LBRCEMPLOYEESTATISTICS
+	]]>
+	WHERE CD_COMPANY = #{srchCdCompny}
+		AND CD_BIZAREA = #{srchCdBizarea}
+		AND INPUT_MONTH like #{srchDate}||'%'
+	ORDER BY CD_COMPANY, CD_BIZAREA, INPUT_MONTH
+	</select>
+	
+	<!-- SELECT ONE 월 운영인원 조회 -->
+	<select id="selectOneEmployeeStatistics" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+	SELECT
+		CD_COMPANY
+		, CD_BIZAREA
+		, INPUT_MONTH
+		, MONTH_TO_CNT
+		, BEGIN_EMPLOYEE_CNT
+		, END_EMPLOYEE_CNT
+		, BEGIN_TRAINEE_CNT
+		, END_TRAINEE_CNT
+	FROM LBRCEMPLOYEESTATISTICS
+	]]>
+	WHERE CD_COMPANY = #{cdCompany}
+		AND CD_BIZAREA = #{cdBizarea}
+		AND INPUT_MONTH like #{inputMonth}||'%'
+	ORDER BY CD_COMPANY, CD_BIZAREA, INPUT_MONTH
+	</select>
+	<!-- INSERT 월 운영인원 -->
+	<insert id="insertEmployeeStatistics" parameterType="hashmap">
+	INSERT INTO LBRCEMPLOYEESTATISTICS
+		(
+			CD_COMPANY
+			, CD_BIZAREA
+			, INPUT_MONTH
+			, MONTH_TO_CNT
+			, BEGIN_EMPLOYEE_CNT
+			, BEGIN_TRAINEE_CNT
+			, MODIFIER_ID
+		) VALUES (
+			#{cdCompany}
+			, #{cdBizarea}
+			, #{inputMonth}
+			, #{monthToCnt}
+			, #{beginEmployeeCnt}
+			, #{beginTraineeCnt}
+			, #{loginId}
+		)
+	</insert>
+	<!-- UPDATE 월 운영인원 -->
+	<update id="updateEmployeeStatistics" parameterType="hashmap">
+	UPDATE LBRCEMPLOYEESTATISTICS SET
+		MONTH_TO_CNT = #{monthToCnt}
+		, BEGIN_EMPLOYEE_CNT = #{beginEmployeeCnt}
+		, BEGIN_TRAINEE_CNT = #{beginTraineeCnt}
+		, MODIFIER_ID = #{loginId}
+	WHERE CD_COMPANY = #{cdCompany}
+		AND CD_BIZAREA =  #{cdBizarea}
+		AND INPUT_MONTH = #{inputMonth}
+	</update>
+	<!-- UPDATE 최종 재직인원수를 갱신한다. -->
+	<update id="updateEndEmployeeCnt" parameterType="hashmap">
+	UPDATE LBRCEMPLOYEESTATISTICS SET
+		END_EMPLOYEE_CNT = #{endEmployeeCnt}
+		, END_TRAINEE_CNT = #{endTraineeCnt}
+	WHERE CD_COMPANY = #{cdCompany}
+		AND CD_BIZAREA =  #{cdBizarea}
+		AND INPUT_MONTH = #{inputMonth}
+	</update>
+</mapper>

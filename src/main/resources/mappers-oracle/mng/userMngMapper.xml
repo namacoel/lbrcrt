@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lbrcrt.mapper.userMngMapper">
+
+	<select id="selectUserList" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			USER_ID
+			, PASSWORD
+			, KORNAME
+			, SEX_CD
+			, FN_CMM_NM('SEX', SEX_CD) SEX_CD_NM
+			, BIRTHDAY
+			, EMAIL
+			, EMPLY_NUM
+			, CLASS_CD
+			, STATUS_CD
+			, FN_CMM_NM('USERSTTS', STATUS_CD) STATUS_CD_NM
+			, CREATOR_ID
+			, CREATED_DT
+			, MODIFIER_ID
+			, MODIFIED_DT
+		FROM
+			LBUSER
+		WHERE 1=1
+ 	]]>
+		<if test="pUserId != null and pUserId != ''">
+			AND USER_ID = #{pUserId}
+		</if>
+		<if test="srchUserNm != null and srchUserNm != ''">
+			AND KORNAME LIKE '%' || #{srchUserNm} || '%'
+		</if>
+		<if test="srchUserId != null and srchUserId != ''">
+			AND USER_ID LIKE '%' || #{srchUserId} || '%'
+		</if>
+		<if test="srchUserSttsCode != null and srchUserSttsCode != ''">
+			AND STATUS_CD LIKE '%' || #{srchUserSttsCode} || '%'
+		</if>
+	</select>
+	
+	<insert id="insertUser" parameterType="hashmap">
+		INSERT INTO LBUSER
+  			(
+  				USER_ID
+				, KORNAME
+	  			<if test="password != null and password != ''">
+					, PASSWORD
+				</if>
+				, SEX_CD
+				, BIRTHDAY
+				, EMAIL
+				, EMPLY_NUM
+				, CLASS_CD
+				, STATUS_CD
+				, CREATOR_ID
+				, MODIFIER_ID
+  			) VALUES (
+  				#{userId}
+				, #{korname}
+				, #{password}
+				, #{sexCd}
+				, #{birthday}
+				, #{email}
+				, #{emplyNum}
+				, #{classCd}
+				, #{statusCd}
+				, #{loginId}
+				, #{loginId}
+  			)
+	</insert>
+	
+	<update id="updateUser" parameterType="hashmap">
+		UPDATE LBUSER SET
+			KORNAME = #{korname}
+			<if test="password != null and password != ''">
+				, PASSWORD = #{password}
+			</if> 
+			, SEX_CD = #{sexCd}   
+			, BIRTHDAY = #{birthday}
+			, EMAIL = #{email}   
+			, EMPLY_NUM = #{emplyNum}
+			, CLASS_CD = #{classCd} 
+			, STATUS_CD = #{statusCd}
+			, MODIFIER_ID = #{loginId} 
+			, MODIFIED_DT = SYSDATE 
+			
+		WHERE USER_ID = #{userId}
+	</update>
+</mapper>

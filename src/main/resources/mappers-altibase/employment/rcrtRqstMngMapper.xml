@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lbrcrt.mapper.rcrtRqstMngMapper">
+
+	<!-- SELECT 채용 현황 리스트 -->
+	<select id="selectDeptRcStatusList" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			CD_COMPANY
+			, CD_BIZAREA
+			, FN_GET_BIZAREA(CD_BIZAREA) NM_BIZAREA
+			, CD_DEPT
+			, FN_GET_DEPT(CD_DEPT) NM_DEPT
+			, DEPT_CLASS
+			, REQUEST_DATE
+			, RC_SDATE
+			, RC_EDATE
+			, DATEDIFF(TO_DATE(RC_SDATE, 'YYYYMMDD'), TO_DATE(RC_EDATE, 'YYYYMMDD'), 'DAY')+1 RC_DAYS
+			, EDU_SDATE
+			/* , CASE WHEN RC_EDATE <= TO_CHAR(SYSDATE, 'YYYYMMDD') THEN '완료' ELSE '채용중' END RC_STTS */
+			, RC_PROG_CD
+			, FN_CMM_NM('RCPROGCD', RC_PROG_CD) RC_PROG_NM
+			, RC_PROG_MEMO
+			, REQUEST_PEOPLE_CNT
+			, PICKED_PEOPLE_CNT
+			, APLCNT_PEOPLE_CNT
+		FROM
+			LBRCRTRQSTLIST A LEFT OUTER JOIN (
+				SELECT
+					APLCNT_BIZAREA
+					, APLCNT_DEPT
+					, APLCNT_CLASS
+					, SUM(CASE ITVW_RESULT WHEN '1' THEN 1 ELSE 0 END) PICKED_PEOPLE_CNT
+					, COUNT(*) APLCNT_PEOPLE_CNT
+				FROM LBAPLCNTLIST
+				WHERE 1=1
+				GROUP BY APLCNT_BIZAREA, APLCNT_DEPT, APLCNT_CLASS) B ON A.CD_BIZAREA = B.APLCNT_BIZAREA AND A.CD_DEPT = B.APLCNT_DEPT AND A.DEPT_CLASS = B.APLCNT_CLASS
+			
+		WHERE 1=1
+ 	]]>
+		<if test="srchBizarea != null and srchBizarea != ''">
+			AND CD_BIZAREA = #{srchBizarea}
+		</if>
+<!-- 		<if test="srchNmDept != null and srchNmDept != ''"> -->
+<!-- 			AND CD_DEPT IN (SELECT CD_DEPT FROM LBCMMDEPT WHERE NM_DEPT LIKE '%' || #{srchNmDept} || '%') -->
+<!-- 		</if> -->
+		<if test="srchDept != null and srchDept != ''">
+			AND CD_DEPT = #{srchDept}
+		</if>
+<!-- 		<if test="cdDept != null and cdDept != ''"> -->
+<!-- 			AND CD_DEPT = #{cdDept} -->
+<!-- 		</if> -->
+		<if test="srchRcProgCd != null and srchRcProgCd != ''">
+			AND RC_PROG_CD = #{srchRcProgCd}
+		</if>
+		ORDER BY CD_COMPANY, NM_BIZAREA, NM_DEPT, DEPT_CLASS
+	</select>
+	<!-- SELECT ONE 채용 현황 -->
+	<select id="selectOneDeptRcStatus" parameterType="hashmap" resultType="whashmap">
+		SELECT
+			CD_COMPANY
+			, CD_BIZAREA
+			, CD_DEPT
+			, DEPT_CLASS
+			, REQUEST_DATE
+			, RC_SDATE
+			, RC_EDATE
+			, EDU_SDATE
+			, REQUEST_PEOPLE_CNT
+			, RC_PROG_CD
+			, RC_PROG_MEMO
+			, UPID
+			, UPDT
+		FROM
+			LBRCRTRQSTLIST
+		WHERE CD_COMPANY = #{cdCompany}
+			AND CD_BIZAREA = #{cdBizarea}
+			AND CD_DEPT = #{cdDept}
+			AND DEPT_CLASS = #{deptClass}
+	</select>
+	<!-- INSERT 채용 현황 -->
+	<insert id="insertDeptRcStatusList" parameterType="hashmap">
+		INSERT INTO LBRCRTRQSTLIST
+			(
+				CD_COMPANY
+				, CD_BIZAREA
+				, CD_DEPT
+				, DEPT_CLASS
+				, REQUEST_DATE
+				, RC_SDATE
+				, RC_EDATE
+				, EDU_SDATE
+				, REQUEST_PEOPLE_CNT
+				, RC_PROG_CD
+				, RC_PROG_MEMO
+				, UPID
+			) VALUES (
+				#{cdCompany}
+				, #{cdBizarea}
+				, #{cdDept}
+				, #{deptClass}
+				, #{requestDate}
+				, #{rcSdate}		
+				, #{rcEdate}		
+				, #{eduSdate}		
+				, #{requestPeopleCnt}
+				, #{rcProgCd}
+				, #{rcProgMemo}
+				, #{loginId}	
+			)
+	</insert>
+	<!-- UPDATE 채용 현황-->
+	<update id="updateDeptRcStatus" parameterType="hashmap">
+		UPDATE LBRCRTRQSTLIST SET
+			REQUEST_DATE = #{requestDate}
+			, RC_SDATE = #{rcSdate}
+			, RC_EDATE = #{rcEdate}
+			, EDU_SDATE = #{eduSdate}
+			, REQUEST_PEOPLE_CNT = #{requestPeopleCnt}
+			, RC_PROG_CD = #{rcProgCd}
+			, RC_PROG_MEMO = #{rcProgMemo} 
+			, UPID = #{loginId}
+		WHERE CD_COMPANY = #{cdCompany}
+			AND CD_BIZAREA = #{cdBizarea}
+			AND CD_DEPT = #{cdDept}
+			AND DEPT_CLASS = #{deptClass}
+	</update>
+</mapper>

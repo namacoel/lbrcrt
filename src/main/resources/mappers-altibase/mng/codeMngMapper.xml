@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lbrcrt.mapper.codeMngMapper">
+
+	<!-- 코드그룹 리스트 조회 -->
+	<select id="selectCodeGrpList" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			CODE_GRP
+			, CODE_GRP_NM
+			, CODE_GRP_DESC
+			, USYN
+			, FN_CMM_NM('OXSTTS', USYN) USYNNM
+			, UPID
+			, UPDT
+		FROM
+			LBCMMCODEGRP
+		WHERE 1=1
+ 	]]>
+		<if test="codeGrp != null and codeGrp != ''">
+			AND CODE_GRP = #{codeGrp}
+		</if>
+		<if test="srchCodeGrp != null and srchCodeGrp != ''">
+			AND CODE_GRP like '%' || #{srchCodeGrp} || '%'
+		</if>
+		<if test="srchCodeGrpNm != null and srchCodeGrpNm != ''">
+			AND CODE_GRP_NM like '%' || #{srchCodeGrpNm} || '%'
+		</if>
+		<if test="srchUsyn != null and srchUsyn != ''">
+			AND USYN = #{srchUsyn}
+		</if>
+		ORDER BY CODE_GRP ASC
+	</select>
+
+	<!-- 코드그룹 등록 -->
+	<insert id="insertCodeGrp" parameterType="hashmap">
+		INSERT INTO LBCMMCODEGRP
+  			(
+			    CODE_GRP
+			    , CODE_GRP_NM
+			    , CODE_GRP_DESC
+			    , USYN
+			    , INID
+			    , UPID
+  			) VALUES (
+  				#{codeGrp}
+  				, #{codeGrpNm}
+  				, #{codeGrpDesc}
+  				, #{codeGrpUsyn}
+  				, #{loginId}
+  				, #{loginId}
+  			)
+	</insert>
+
+	<!-- 코드그룹 수정 -->
+	<update id="updateCodeGrp" parameterType="hashmap">
+		UPDATE LBCMMCODEGRP SET
+			CODE_GRP_NM = #{codeGrpNm}
+			, CODE_GRP_DESC = #{codeGrpDesc}
+			, USYN = #{codeGrpUsyn}
+			, UPID = #{loginId}
+			, UPDT = SYSDATE
+		WHERE CODE_GRP = #{codeGrp}
+	</update>
+	
+	<!-- 코드 리스트 조회 -->
+	<select id="selectCodeList" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			CODE_GRP
+			, CODE
+			, CODE_NM
+			, CODE_DESC
+			, ETC1
+			, ETC2
+			, ETC3
+			, SORT_ORDER
+			, USYN
+			, FN_CMM_NM('OXSTTS', USYN) USYNNM
+			, INID
+			, INDT
+			, UPID
+			, UPDT
+		FROM
+			LBCMMCODE
+ 	]]>
+		WHERE CODE_GRP = #{codeGrp}
+		<if test="code != null and code != ''">
+			AND CODE = #{code}
+		</if>
+		<if test="slctUsyn != null and slctUsyn != ''">
+			AND USYN = #{slctUsyn}
+		</if>
+		ORDER BY CODE_GRP ASC, CODE ASC
+	</select>
+
+	<!-- 코드 등록 -->
+	<insert id="insertCode" parameterType="hashmap">
+		INSERT INTO LBCMMCODE
+  			(
+  				CODE_GRP
+  				, CODE
+			    , CODE_NM
+			    , CODE_DESC
+			    , SORT_ORDER
+			    , ETC1
+			    , ETC2
+			    , ETC3
+			    , USYN
+			    , INID
+			    , UPID
+  			) VALUES (
+  				#{codeGrp}
+  				, #{code}
+  				, #{codeNm}
+  				, #{codeDesc}
+  				, #{sortOrder}
+  				, #{etc1}
+  				, #{etc2}
+  				, #{etc3}
+  				, #{codeUsyn}
+  				, #{loginId}
+  				, #{loginId}
+  			)
+	</insert>
+
+	<!-- 코드 수정 -->
+	<update id="updateCode" parameterType="hashmap">
+		UPDATE LBCMMCODE SET
+			CODE_NM = #{codeNm}
+			, CODE_DESC = #{codeDesc}
+			, SORT_ORDER = #{sortOrder}
+			, ETC1 = #{etc1}
+			, ETC2 = #{etc2}
+			, ETC3 = #{etc3}
+			, USYN = #{codeUsyn}
+			, UPID = #{loginId}
+			, UPDT = SYSDATE
+		WHERE CODE_GRP = #{codeGrp} and CODE = #{code}
+	</update>
+	
+	<!-- 코드그룹 및 코드 Join 조회 -->
+	<select id="selectListJoin" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			A.CODE_GRP
+			, B.CODE_GRP_NM
+			, A.CODE
+			, A.CODE_NM
+			, A.SORT_ORDER
+			, A.USYN
+			, FN_CMM_NM('OXSTTS', A.USYN) USYNNM
+		FROM LBCMMCODE A JOIN LBCMMCODEGRP B ON A.CODE_GRP = B.CODE_GRP
+		WHERE 1=1
+ 	]]>
+		<if test="srchCode != null and srchCode != ''">
+			AND A.CODE like '%' || #{srchCode} || '%' 
+		</if>
+		<if test="srchCodeNm != null and srchCodeNm != ''">
+			AND A.CODE_NM like '%' || #{srchCodeNm} || '%'
+		</if>
+		ORDER BY A.CODE_GRP ASC, A.SORT_ORDER ASC
+	</select>
+	
+</mapper>

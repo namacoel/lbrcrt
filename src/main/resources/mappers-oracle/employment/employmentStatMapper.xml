@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lbrcrt.mapper.employmentStatMapper">
+
+	<!-- 채용경로별 지원자 목록 건수 -->
+	<select id="selectStatAplcntByRecruitSiteTotalCount" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			COUNT(*) TOTAL_COUNT
+		FROM LBAPLCNTLIST
+		WHERE 1=1
+			AND JOB_DAY BETWEEN #{srchJobDayS}||'01' AND #{srchJobDayE}||'31'
+		ORDER BY APLCNT_BIZAREA, APLCNT_DEPT, RECRUIT_SITE1, RECRUIT_SITE2, APLCNT_NM
+	]]>
+	</select>
+	<!-- 채용경로별 지원자 목록 -->
+	<select id="selectStatAplcntByRecruitSite" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			FN_GET_BIZAREA(APLCNT_BIZAREA) APLCNT_BIZAREA
+			, FN_GET_DEPT(APLCNT_DEPT) APLCNT_DEPT
+			, FN_CMM_NM('RECRUITSITE1', RECRUIT_SITE1) RECRUIT_SITE1
+			, FN_CMM_NM('RECRUITSITE2', RECRUIT_SITE2) RECRUIT_SITE2
+			, EMPLY_NUM
+			, APLCNT_NM
+			, BIRTHDAY
+			, JOB_DAY
+			, QUIT_DAY
+		FROM LBAPLCNTLIST
+		WHERE 1=1
+			AND JOB_DAY BETWEEN #{srchJobDayS}||'01' AND #{srchJobDayE}||'31'
+		ORDER BY APLCNT_BIZAREA, APLCNT_DEPT, RECRUIT_SITE1, RECRUIT_SITE2, JOB_DAY, EMPLY_NUM, APLCNT_NM
+	]]>
+	</select>
+</mapper>

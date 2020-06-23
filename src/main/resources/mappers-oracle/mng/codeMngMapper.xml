@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lbrcrt.mapper.codeMngMapper">
+
+	<!-- 코드그룹 조회 -->
+	<select id="selectCodeIdList" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			CODE_ID
+			, CODE_ID_NM
+			, CODE_ID_DESC
+			, USE_YN
+			, CREATOR_ID
+			, CREATED_DT
+			, MODIFIER_ID
+			, MODIFIED_DT
+		FROM
+			LBCMMCODEID
+		WHERE 1=1
+ 	]]>
+		
+		<if test="pCodeId != null and pCodeId != ''">
+			AND CODE_ID = #{pCodeId}
+		</if>
+		<if test="srchCodeId != null and srchCodeId != ''">
+			AND CODE_ID like '%' || #{srchCodeId} || '%'
+		</if>
+		<if test="srchCodeNm != null and srchCodeNm != ''">
+			AND CODE_ID_NM like '%' || #{srchCodeNm} || '%'
+		</if>
+		<if test="srchUseYn != null and srchUseYn != ''">
+			AND USE_YN = #{srchUseYn}
+		</if>
+		ORDER BY CODE_ID ASC
+	</select>
+
+	<!-- 코드그룹 등록 -->
+	<insert id="insertCodeId" parameterType="hashmap">
+		INSERT INTO LBCMMCODEID
+  			(
+			    CODE_ID
+			    , CODE_ID_NM
+			    , CODE_ID_DESC
+			    , USE_YN
+			    , CREATOR_ID
+			    , MODIFIER_ID
+  			) VALUES (
+  				#{txtCodeId}
+  				, #{txtCodeIdNm}
+  				, #{txtCodeIdDesc}
+  				, #{slctUseYn}
+  				, #{creatorId}
+  				, #{modifierId}
+  			)
+	</insert>
+
+	<!-- 코드그룹 수정 -->
+	<update id="updateCodeId" parameterType="hashmap">
+		UPDATE LBCMMCODEID SET
+			CODE_ID_NM = #{txtCodeIdNm}
+			, CODE_ID_DESC = #{txtCodeIdDesc}
+			, USE_YN = #{slctUseYn}
+			, CREATOR_ID = #{creatorId}
+			, MODIFIER_ID = #{modifierId}
+		WHERE CODE_ID = #{txtCodeId}
+	</update>
+	
+	<!-- 코드 목록 조회 -->
+	<select id="selectCodeList" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			CODE_ID
+			, CODE
+			, CODE_NM
+			, CODE_DESC
+			, USE_YN
+			, SORT_ORDER
+			, ETC1
+			, ETC2
+			, ETC3
+			, CREATOR_ID
+			, CREATED_DT
+			, MODIFIER_ID
+			, MODIFIED_DT
+		FROM
+			LBCMMCODE
+		WHERE 1=1
+ 	]]>
+		
+		<if test="pCodeId != null and pCodeId != ''">
+			AND CODE_ID = #{pCodeId}
+		</if>
+		<if test="pCode != null and pCode != ''">
+			AND CODE = #{pCode}
+		</if>
+		
+		<if test="srchCodeNm != null and srchCodeNm != ''">
+			AND CODE_NM like '%' || #{srchCodeNm} || '%'
+		</if>
+		<if test="slctUseYn != null and slctUseYn != ''">
+			AND USE_YN = #{slctUseYn}
+		</if>
+		ORDER BY SORT_ORDER ASC
+	</select>
+
+	<!-- 코드 등록 -->
+	<insert id="insertCode" parameterType="hashmap">
+		INSERT INTO LBCMMCODE
+  			(
+  				CODE_ID
+  				, CODE
+			    , CODE_NM
+			    , CODE_DESC
+			    , ETC1
+			    , ETC2
+			    , ETC3
+			    , SORT_ORDER
+			    , USE_YN
+			    , CREATOR_ID
+			    , MODIFIER_ID
+  			) VALUES (
+  				#{txtCodeId}
+  				, #{txtCodeSub}
+  				, #{txtCodeNmSub}
+  				, #{txtCodeDescSub}
+  				, #{txtEtc1Sub}
+  				, #{txtEtc2Sub}
+  				, #{txtEtc3Sub}
+  				, #{txtSortOrderSub}
+  				, #{slctUseYnSub}
+  				, #{creatorId}
+  				, #{modifierId}
+  			)
+	</insert>
+
+	<!-- 코드 수정 -->
+	<update id="updateCode" parameterType="hashmap">
+		UPDATE LBCMMCODE SET
+			CODE_NM = #{txtCodeNmSub}
+			, CODE_DESC = #{txtCodeDescSub}
+			, ETC1 = #{txtEtc1Sub}
+			, ETC2 = #{txtEtc2Sub}
+			, ETC3 = #{txtEtc3Sub}
+			, SORT_ORDER = #{txtSortOrderSub}
+			, USE_YN = #{slctUseYnSub}
+			, MODIFIER_ID = #{modifierId}
+		WHERE CODE_ID = #{txtCodeId} and CODE = #{txtCodeSub}
+	</update>
+	
+	<!-- 코드그룹 및 코드 Join 조회 -->
+	<select id="selectCodeListJoin" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			A.CODE_ID
+			, B.CODE_ID_NM
+			, A.CODE
+			, A.CODE_NM
+			, A.USE_YN
+			, A.SORT_ORDER
+		FROM LBCMMCODE A JOIN LBCMMCODEID B ON A.CODE_ID = B.CODE_ID
+		WHERE 1=1
+ 	]]>
+		
+		<if test="srchCodeIdJoin != null and srchCodeIdJoin != ''">
+			AND A.CODE like '%' || #{srchCodeIdJoin} || '%' 
+		</if>
+		
+		<if test="srchCodeNmJoin != null and srchCodeNmJoin != ''">
+			AND A.CODE_NM like '%' || #{srchCodeNmJoin} || '%'
+		</if>
+		<if test="srchUseYnJoin != null and srchUseYnJoin != ''">
+			AND A.USE_YN = #{srchUseYnJoin}
+		</if>
+		ORDER BY A.CODE_ID ASC, A.SORT_ORDER ASC
+	</select>
+	
+</mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lbrcrt.mapper.testMapper">
+
+	<!-- 데이터를 삭제한다. -->
+	<delete id="deleteExcelUpload">
+		TRUNCATE TABLE TEST
+	</delete>
+	
+	<!-- 데이터를 저장한다. -->
+	<insert id="insertExcelUpload" parameterType="hashmap">
+		INSERT INTO TEST (
+			C1
+			, C2
+			, C3
+			, C4
+			, C5
+			, C6
+			, C7
+			, C8
+			, C9
+			, C10
+			, INDT
+			, INID
+		) VALUES (
+			#{C1}
+			, #{C2}
+			, #{C3}
+			, #{C4}
+			, #{C5}
+			, #{C6}
+			, #{C7}
+			, #{C8}
+			, #{C9}
+			, #{C10}
+			, SYSDATE
+			, #{INID}
+		)
+	</insert>
+	
+	
+	
+	<!--
+	<insert id="insertSttsUploadList" parameterType="hashmap">
+		INSERT INTO TEST (
+			C1
+			, C2
+			, C3
+			, C4
+			, C5
+			, C6
+			, C7
+			, C8
+			, C9
+			, C10
+			, INID
+			, INDT
+		(
+		<foreach collection="mapList" item="item" separator="UNION ALL">
+		SELECT 
+			  CAST(#{item.c1} as varchar(50)) C1
+			, CAST(#{item.c2} as varchar(50)) C2
+			, CAST(#{item.c3} as varchar(50)) C3
+			, CAST(#{item.c4} as varchar(50)) C4
+			, CAST(#{item.c5} as varchar(50)) 5
+			, CAST(#{item.c6} as varchar(50)) C6
+			, CAST(#{item.c7} as varchar(50)) C76
+			, CAST(#{item.c8} as varchar(50)) C8
+			, CAST(#{item.c9} as varchar(50)) C9
+			, CAST(#{item.c10} as varchar(50)) C10
+			, CAST(#{item.inid} as varchar(20)) MODIFIER_ID
+			, SYSDATE INDT
+		FROM DUAL
+		</foreach>
+		)
+	</insert>
+	-->
+	
+	<!--
+	<insert id="insertExcelUploadList" parameterType="hashmap">
+		<foreach collection="mapList" item="item" index="index" separator=" " open="INSERT ALL" close="SELECT * FROM DUAL">
+			INTO TEST (
+				C1
+				, C2
+				, C3
+				, C4
+				, C5
+				, C6
+				, C7
+				, C8
+				, C9
+				, C10
+				, INID
+				, INDT
+			) VALUES(
+				#{item.C1}
+				, #{item.C2}
+				, #{item.C3}
+				, #{item.C4}
+				, #{item.C5}
+				, #{item.C6}
+				, #{item.C7}
+				, #{item.C8}
+				, #{item.C9}
+				, #{item.C10}
+				, #{item.INID}
+				, SYSDATE
+			)
+		</foreach>
+	</insert>
+	-->
+
+</mapper>

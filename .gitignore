@@ -1,0 +1,9 @@
+#folder
+.externalToolBuilders/
+.settings/
+.svn/
+src/main/webapp/WEB-INF/spring/
+target/
+
+#file
+

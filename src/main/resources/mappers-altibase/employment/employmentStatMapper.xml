@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lbrcrt.mapper.employmentStatMapper">
+
+	<!-- 채용경로별 지원자 목록 -->
+	<select id="selectStatAplcntByRecruitSite" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			FN_GET_BIZAREA(A.APLCNT_BIZAREA) APLCNT_BIZAREA
+			, FN_GET_DEPT(A.APLCNT_DEPT) APLCNT_DEPT
+			, A.APLCNT_CLASS /* 기수 */
+			, FN_CMM_NM('RECRUITSITE1', A.RECRUIT_SITE1) RECRUIT_SITE1
+			, FN_CMM_NM('RECRUITSITE2', A.RECRUIT_SITE2) RECRUIT_SITE2
+			, A.RECOMMENDER /* 추천인 */
+			, A.EMPLY_NUM
+			, A.APLCNT_NM
+			, A.BIRTHDAY
+			, A.EDU_DATE
+			, A.JOB_DAY
+			, A.QUIT_DAY
+			/*, B.CD_COMPANY*/
+			/*, B.CD_BIZAREA*/
+			/*, B.CD_DEPT*/
+			/*, B.DEPT_CLASS*/
+			, B.EDU_SDATE /*기수 교육일*/
+		FROM LBAPLCNTLIST A INNER JOIN LBRCRTRQSTLIST B 
+			ON A.APLCNT_COMPANY = B.CD_COMPANY
+			AND A.APLCNT_BIZAREA = B.CD_BIZAREA
+			AND A.APLCNT_DEPT = B.CD_DEPT
+			AND A.APLCNT_CLASS = B.DEPT_CLASS
+		WHERE 1=1
+	]]>
+		<if test="srchJobDayS != null and srchJobDayS != '' and srchJobDayE != null and srchJobDayE != ''">
+			AND A.JOB_DAY BETWEEN #{srchJobDayS}||'01' AND #{srchJobDayE}||'31'
+		</if>
+		<if test="srchEduSdate != null and srchEduSdate != ''">
+			AND B.EDU_SDATE LIKE #{srchEduSdate}||'%'
+		</if>
+		<if test="srchCdBizarea != null and srchCdBizarea != ''">
+			AND A.APLCNT_BIZAREA = #{srchCdBizarea}
+		</if>
+		<if test="srchCdDept != null and srchCdDept != ''">
+			AND A.APLCNT_DEPT = #{srchCdDept}
+		</if>
+		<if test="mapList != null and mapList != ''">
+			AND A.APLCNT_CLASS IN (
+			<foreach collection="mapList" item="item" separator=",">
+				#{item.aplcntClass}
+			</foreach>
+			)
+		</if>
+		ORDER BY A.APLCNT_BIZAREA, A.APLCNT_DEPT, A.RECRUIT_SITE1, A.RECRUIT_SITE2, A.JOB_DAY, A.EMPLY_NUM, A.APLCNT_NM
+	</select>
+	
+	<!-- 부서별 지원 현황 -->
+	<select id="selectStatAplcntStatusList" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		/* 통계.부서별 지원 현황 */
+		SELECT
+			A.CD_COMPANY CD_COMPANY -- 회사
+			, A.CD_BIZAREA CD_BIZAREA-- 사업장 코드
+			, FN_GET_BIZAREA(A.CD_BIZAREA) NM_BIZAREA -- 사업장명
+			, A.CD_DEPT CD_DEPT-- 부서코드
+			, FN_GET_DEPT(A.CD_DEPT) NM_DEPT -- 부서명
+			, A.DEPT_CLASS DEPT_CLASS -- 기수
+			, SUBSTR(A.EDU_SDATE, 1, 6) EDU_MONTH -- 교육월
+			, CASE WHEN A.RC_EDATE <= TO_CHAR(SYSDATE, 'YYYYMMDD') THEN '완료' ELSE '채용중' END RC_STTS -- 진행상태
+			, A.RC_PROG_CD
+			, A.RC_PROG_MEMO
+			, FN_CMM_NM('RCPROGCD', A.RC_PROG_CD) RC_PROG_NM
+			, A.REQUEST_PEOPLE_CNT -- 요청인원
+			, COUNT(APLCNT_IDX) APLCNT_CNT -- 지원자
+			, SUM(CASE WHEN ITVW_DATE IS NOT NULL THEN 1 ELSE NULL END) ITVW_WATING_CNT -- 면접 대기자
+			, SUM(CASE WHEN ITVW_ATTD = '1' THEN 1 ELSE NULL END) ITVW_ATTD_CNT -- 면접 참석자
+			, SUM(CASE WHEN ITVW_RESULT = '1' THEN 1 ELSE NULL END) PICKED_CNT -- 합격자
+			, SUM(CASE WHEN EDU_ATTD_ITTN_STTS = '2' OR EDU_ATTD_ITTN_STTS = '3' THEN 1 ELSE NULL END) GIVEUP_CNT -- 포기자
+			, SUM(CASE WHEN ITVW_RESULT = '1' AND (EDU_ATTD_ITTN_STTS NOT IN ('2','3') OR EDU_ATTD_ITTN_STTS IS NULL) THEN 1 ELSE NULL END) FINAL_PICKED_CNT -- 최종합격
+			, SUM(CASE WHEN EDU_ATTD_STTS = '1' THEN 1 ELSE NULL END) EDU_ATTD_CNT-- 교육출석자 
+		FROM LBRCRTRQSTLIST A LEFT OUTER JOIN LBAPLCNTLIST B
+			ON A.CD_BIZAREA = B.APLCNT_BIZAREA 
+			AND A.CD_DEPT = B.APLCNT_DEPT 
+			AND A.DEPT_CLASS = B.APLCNT_CLASS
+		WHERE A.CD_COMPANY IS NOT NULL
+	]]>
+		<if test="srchBizarea != null and srchBizarea != ''">
+			AND A.CD_BIZAREA = #{srchBizarea}
+		</if>
+		<if test="srchDept != null and srchDept != ''">
+			AND A.CD_DEPT = #{srchDept}
+		</if>
+		<if test="srchRcProgCd != null and srchRcProgCd != ''">
+			AND A.RC_PROG_CD = #{srchRcProgCd}
+		</if>
+		<if test="srchEduSdate != null and srchSduEdate != '' and srchEduEdate != null and srchEduEdate != ''">
+				AND (A.EDU_SDATE BETWEEN #{srchEduSdate}||'01' AND #{srchEduEdate}||'31' OR A.EDU_SDATE IS NULL)	
+		</if>
+		GROUP BY A.CD_COMPANY, A.CD_BIZAREA, A.CD_DEPT, A.DEPT_CLASS, A.EDU_SDATE, A.RC_EDATE, A.REQUEST_PEOPLE_CNT, A.RC_PROG_CD, A.RC_PROG_MEMO
+		ORDER BY CD_COMPANY, NM_BIZAREA, NM_DEPT, DEPT_CLASS;		
+	</select>
+	<!-- 채용현황별 지원자 목록 -->
+	<select id="selectStatRcrtStatusResultList" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			APLCNT_IDX /*등록번호*/
+			, FN_GET_BIZAREA(APLCNT_BIZAREA) APLCNT_BIZAREA_NM /*사업장*/
+			, FN_GET_DEPT(APLCNT_DEPT) APLCNT_DEPT_NM /*부서*/
+			, APLCNT_CLASS /*기수*/
+			, EMPLY_NUM /*사번*/
+			, APLCNT_NM /*이름*/
+			, BIRTHDAY /*생년월일*/
+			, FN_CMM_NM('SEX', APLCNT_SEX) APLCNT_SEX /*성별*/ 
+			, CONTACT_INFO /*연락처*/
+			, FN_CMM_NM('OXSTTS', BLACKLIST) BLACKLIST /*블랙*/
+			, FN_CMM_NM('RECRUITSITE1', RECRUIT_SITE1) RECRUIT_SITE1 /*채용경로1*/
+			, FN_GET_RCS2('RECRUITSITE2', RECRUIT_SITE2, RECRUIT_SITE1) RECRUIT_SITE2 /*채용경로2*/
+			, PHONE_ITVW_RESULT /*전면결과 코드*/
+			, FN_CMM_NM('PHONEITVWRESULT', PHONE_ITVW_RESULT) PHONE_ITVW_RESULT_NM /*전면결과*/
+			, PHONE_ITVW /*전화면접*/
+			, ITVW_DATE /*면접일*/
+			, ITVW_TIME /*면접시간*/
+			, INTERVIEWER /*면접관*/
+			, ITVW_ATTD /*면접참석 코드*/
+			, FN_CMM_NM('ATTDSTTS', ITVW_ATTD) ITVW_ATTD_NM /*면접참석*/
+			, ITVW_RESULT /*면접결과 코드*/
+			, FN_CMM_NM('ITVWRESULT', ITVW_RESULT) ITVW_RESULT_NM /*면접결과*/
+			, PTOP_ITVW /*대면면접*/
+			, EDU_ATTD_STTS /*교육의사 코드*/
+			, FN_CMM_NM('ATTDSTTS', EDU_ATTD_STTS) EDU_ATTD_STTS_NM /*교육의사*/
+			, EDU_ATTD_ITTN_STTS /*교육참석 코드*/
+			, FN_CMM_NM('ATTDSTTS', EDU_ATTD_ITTN_STTS) EDU_ATTD_ITTN_STTS_NM /*교육참석*/
+			, EDU_DATE /*지원자 교육일*/
+			, FN_CMM_ADDR(ADDR_DO) ADDR_DO /*주소(도)*/
+			, FN_CMM_ADDR(ADDR_SI) ADDR_SI /*주소(시)*/
+			, FN_CMM_ADDR(ADDR_GU) ADDR_GU /*주소(구)*/
+			, FN_CMM_NM('HIGHESTEDU', HIGHEST_EDU) HIGHEST_EDU /*학력*/
+			, FN_CMM_NM('OXSTTS', CAREER_STTS) CAREER_STTS /*경력*/
+			, COMPANY1 /*회사명1*/
+			, COMPANY_PERIOD1 /*근무기간1*/
+			, ASSIGNED_TASK1 /*담당업무1*/
+			, COMPANY2 /*회사명2*/
+			, COMPANY_PERIOD2 /*근무기간2*/
+			, ASSIGNED_TASK2 /*담당업무2*/
+			, TO_CHAR(UPDT, 'YYYYMMDD') UPDT /*수정일시*/
+		FROM LBAPLCNTLIST 
+		WHERE 1=1
+	]]>
+			<!-- 회사 코드는 아직 미사용 2016.09.20 -->
+<!-- 			<if test="cdCompany != null and cdCompany != ''"> -->
+<!-- 			 = #{cdCompany} -->
+<!-- 			</if> -->
+			AND APLCNT_BIZAREA = #{cdBizarea}
+			<if test="cdDept != null and cdDept != ''">
+				AND APLCNT_DEPT = #{cdDept}
+			</if>
+			<if test="deptClass != null and deptClass != ''">
+				AND APLCNT_CLASS = #{deptClass}
+			</if>
+			<!-- itvwDate를 필수로 하지 않아 날짜값이 안 들어오는 경우 대용량 조회 발생할 수 있음. 필수로 넣을거면 메인과 채용쪽 플래그로 분리해야함 -->
+			<if test="itvwDate != null and itvwDate != ''">
+				AND ITVW_DATE = #{itvwDate}
+			</if>
+			<if test="itvwTime != null and itvwTime != ''">
+				AND ITVW_TIME = #{itvwTime}
+			</if>
+		<choose>
+			<when test="flag == 'ITVW_WATING'">
+				AND ITVW_DATE IS NOT NULL /*면접대기*/
+			</when>
+			<when test="flag == 'ITVW_ATTD'">
+				AND ITVW_ATTD = '1' /*면접참석*/
+			</when>
+			<when test="flag == 'PICKED'">
+				AND ITVW_RESULT = '1' /*면접합격*/
+			</when>
+			<when test="flag == 'GIVEUP'">
+				AND EDU_ATTD_ITTN_STTS IN ('2', '3') /*포기자*/
+			</when>
+			<when test="flag == 'FINAL_PICKED'">
+				AND ITVW_RESULT = '1' 
+				AND (EDU_ATTD_ITTN_STTS NOT IN ('2','3') OR EDU_ATTD_ITTN_STTS IS NULL) /*최종합격*/
+			</when>
+			<when test="flag == 'EDU_ATTD'">
+				AND EDU_ATTD_STTS = '1' /*교육출석*/
+			</when>
+			<otherwise>
+				/*지원자(APLCNT)1*/
+			</otherwise>
+		</choose>
+		/*ORDER BY ITVW_DATE, ITVW_TIME*/
+	</select>
+	<!-- 메인통계.면접 주간 현황 -->
+	<select id="selectStatItvwWeeklyReport" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT * FROM (
+			SELECT TO_CHAR(NEXT_DAY(TO_DATE(CAST(#{srchDate}  as varchar(8)), 'YYYYMMDD')-6, 'MONDAY'), 'YYYYMMDD') SRCH_DATE FROM DUAL
+			UNION
+			SELECT TO_CHAR(NEXT_DAY(TO_DATE(CAST(#{srchDate}  as varchar(8)), 'YYYYMMDD')-6, 'MONDAY')+1, 'YYYYMMDD') SRCH_DATE FROM DUAL
+			UNION
+			SELECT TO_CHAR(NEXT_DAY(TO_DATE(CAST(#{srchDate}  as varchar(8)), 'YYYYMMDD')-6, 'MONDAY')+2, 'YYYYMMDD') SRCH_DATE FROM DUAL
+			UNION
+			SELECT TO_CHAR(NEXT_DAY(TO_DATE(CAST(#{srchDate}  as varchar(8)), 'YYYYMMDD')-6, 'MONDAY')+3, 'YYYYMMDD') SRCH_DATE FROM DUAL
+			UNION
+			SELECT TO_CHAR(NEXT_DAY(TO_DATE(CAST(#{srchDate}  as varchar(8)), 'YYYYMMDD')-6, 'MONDAY')+4, 'YYYYMMDD') SRCH_DATE FROM DUAL
+		) A LEFT OUTER JOIN (
+			SELECT
+				ITVW_DATE -- 면접일
+				, APLCNT_COMPANY CD_COMPANY-- 회사
+				, APLCNT_BIZAREA CD_BIZAREA-- 사업장코드
+				, FN_GET_BIZAREA(APLCNT_BIZAREA) NM_BIZAREA -- 사업장명
+				, SUM(CASE WHEN ITVW_DATE IS NOT NULL THEN 1 ELSE NULL END) ITVW_WATING_CNT -- 면접 대기자
+				, SUM(CASE WHEN ITVW_ATTD = '1' THEN 1 ELSE NULL END) ITVW_ATTD_CNT -- 면접 참석자
+				, SUM(CASE WHEN ITVW_RESULT = '1' THEN 1 ELSE NULL END) PICKED_CNT -- 합격자
+			FROM LBAPLCNTLIST B
+			WHERE ITVW_DATE BETWEEN TO_CHAR(NEXT_DAY(TO_DATE(#{srchDate} , 'YYYYMMDD')-6, 'MONDAY'), 'YYYYMMDD') AND TO_CHAR(NEXT_DAY(TO_DATE(#{srchDate} , 'YYYYMMDD')-6, 'MONDAY')+5, 'YYYYMMDD')
+			GROUP BY ITVW_DATE, APLCNT_COMPANY, APLCNT_BIZAREA
+			ORDER BY ITVW_DATE, APLCNT_COMPANY, APLCNT_BIZAREA
+		) B ON A.SRCH_DATE = B.ITVW_DATE
+		ORDER BY A.SRCH_DATE
+	]]>
+	</select>
+	<!-- 메인통계.채용 현황 -->
+	<select id="selectStatRcrtReport" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			A.CD_COMPANY CD_COMPANY -- 회사
+			, A.CD_BIZAREA CD_BIZAREA -- 사업장 코드
+			, FN_GET_BIZAREA(A.CD_BIZAREA) NM_BIZAREA -- 사업장명
+			, A.CD_DEPT CD_DEPT -- 부서코드
+			, FN_GET_DEPT(A.CD_DEPT) NM_DEPT -- 부서명
+			, A.DEPT_CLASS DEPT_CLASS -- 기수
+			, A.EDU_SDATE -- 교육시작일
+			, A.RC_SDATE -- 채용 시작일
+			, A.RC_EDATE -- 채용 종료일
+			, A.RC_PROG_CD -- 진행 상태 코드
+			, FN_CMM_NM('RCPROGCD', A.RC_PROG_CD) RC_PROG_NM -- 진행상태
+			, A.REQUEST_PEOPLE_CNT -- 요청인원
+			, COUNT(APLCNT_IDX) APLCNT_CNT -- 지원자
+			, SUM(CASE WHEN ITVW_DATE IS NOT NULL THEN 1 ELSE NULL END) ITVW_WATING_CNT -- 면접 대기자
+			, SUM(CASE WHEN ITVW_ATTD = '1' THEN 1 ELSE NULL END) ITVW_ATTD_CNT -- 면접 참석자
+			, SUM(CASE WHEN ITVW_RESULT = '1' THEN 1 ELSE NULL END) PICKED_CNT -- 합격자
+		FROM LBRCRTRQSTLIST A LEFT OUTER JOIN LBAPLCNTLIST B
+			ON A.CD_BIZAREA = B.APLCNT_BIZAREA 
+			AND A.CD_DEPT = B.APLCNT_DEPT 
+			AND A.DEPT_CLASS = B.APLCNT_CLASS
+		WHERE A.CD_COMPANY IS NOT NULL
+			AND (A.RC_SDATE <= TO_CHAR(NEXT_DAY(TO_DATE(#{srchDate}, 'YYYYMMDD')-6, 'MONDAY')+4, 'YYYYMMDD') OR A.RC_SDATE IS NULL)
+			AND (A.RC_EDATE >= TO_CHAR(NEXT_DAY(TO_DATE(#{srchDate}, 'YYYYMMDD')-6, 'MONDAY'), 'YYYYMMDD') OR A.RC_EDATE IS NULL)
+		GROUP BY A.CD_COMPANY, A.CD_BIZAREA, A.CD_DEPT, A.DEPT_CLASS, A.EDU_SDATE, A.RC_SDATE, A. RC_EDATE, A.REQUEST_PEOPLE_CNT, A.RC_PROG_CD
+		ORDER By A.CD_COMPANY, A.CD_BIZAREA, A.CD_DEPT, A.DEPT_CLASS
+	]]>
+	</select>
+	<!-- 메인통계.인원 운영 현황 -->
+	<select id="selectStatEmployeeMonthReport" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			CD_COMPANY
+			, CD_BIZAREA
+			, NM_BIZAREA
+			, MONTH_TO_CNT
+			, END_EMPLOYEE_CNT
+			, CHANGE_CNT
+			, GAP
+			, END_TRAINEE_CNT
+			, NVL2(RATIO1,RATIO1||'%', NULL) RATIO1
+			, NVL2(RATIO2,RATIO2||'%', NULL) RATIO2
+		FROM (SELECT 
+				A.CD_COMPANY
+				, A.CD_BIZAREA
+				, FN_GET_BIZAREA(A.CD_BIZAREA) NM_BIZAREA
+				, A.MONTH_TO_CNT
+				, A.END_EMPLOYEE_CNT
+				, B.CHANGE_CNT 
+				, A.MONTH_TO_CNT-END_EMPLOYEE_CNT GAP
+				, A.END_TRAINEE_CNT
+				, TO_CHAR((A.END_EMPLOYEE_CNT/A.MONTH_TO_CNT)*100, 'FM900.0') RATIO1
+				, TO_CHAR((A.END_EMPLOYEE_CNT+A.END_TRAINEE_CNT)/A.MONTH_TO_CNT*100, 'FM900.0') RATIO2
+			FROM LBRCEMPLOYEESTATISTICS A LEFT OUTER JOIN (SELECT CD_COMPANY, CD_BIZAREA, SUM(CHANGE_CNT) CHANGE_CNT FROM LBRCEMPLOYEESTATUS 
+			WHERE INPUT_DATE LIKE #{srchDate}||'%'
+			GROUP BY CD_COMPANY, CD_BIZAREA) B ON A.CD_COMPANY = B.CD_COMPANY AND A.CD_BIZAREA = B.CD_BIZAREA
+			WHERE INPUT_MONTH = #{srchDate}
+		)	
+	]]>
+	</select>
+	
+	<update id="updateAplcntList" parameterType="hashmap">
+		UPDATE LBAPLCNTLIST SET
+			INTERVIEWER = #{interviewer}
+			, ITVW_ATTD = #{itvwAttd}
+			, ITVW_RESULT = #{itvwResult}
+			, PTOP_ITVW = #{ptopItvw}
+			, EDU_ATTD_ITTN_STTS = #{eduAttdIttnStts}
+			, EDU_ATTD_STTS = #{eduAttdStts}
+			, EDU_DATE = #{eduDate}
+			, EMPLY_NUM = #{emplyNum}
+			, UPID = #{loginId}
+			, UPDT = SYSDATE
+		WHERE APLCNT_IDX = #{aplcntIdx}
+	
+	</update>
+	
+</mapper>

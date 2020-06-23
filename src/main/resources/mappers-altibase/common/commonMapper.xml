@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lbrcrt.mapper.commonMapper">
+	<!-- 공통코드 가져오기(다건) -->
+	<select id="selectMultiCodeBook" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			CODE_GRP
+			, CODE
+			, CODE_NM
+			, SORT_ORDER
+			, ETC1
+			, ETC2
+			, ETC3
+			, USYN
+		FROM
+			LBCMMCODE
+ 	]]>
+		WHERE CODE_GRP IN
+			<foreach collection="list" item="item" open="(" close=")" separator=",">
+				#{item}
+			</foreach> 
+		ORDER BY CODE_GRP, SORT_ORDER, CODE_NM
+	</select>
+
+
+	<!-- 공통코드에서 코드값을 가져오는 쿼리 -->
+	<select id="getCommonCode" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			CODE_GRP
+			, CODE
+			, CODE_NM
+			, SORT_ORDER
+			, ETC1
+			, ETC2
+			, ETC3
+		FROM
+			lbcmmcode
+ 	]]>
+		WHERE CODE_GRP = #{codeGrp}
+			AND USYN = 'Y'
+		ORDER BY SORT_ORDER, CODE_NM
+	</select>
+	<!-- 공통주소 가져오는 쿼리 -->
+	<select id="selectAddrCode" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			UPPER_ADDR_ID
+			, ADDR_ID
+			, ADDR_NM
+			, USE_YN
+		FROM LBCMMADDR	
+ 	]]>
+		WHERE USE_YN = 'Y'
+		ORDER BY UPPER_ADDR_ID, SORT_ORDER, ADDR_NM
+	</select>
+	<!-- 사업장 코드를 가져오기 -->
+	<select id="selectBizareaCodeBook" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			CD_COMPANY 		AS CODE_GRP
+			, CD_BIZAREA 	AS CODE
+			, NM_BIZAREA_L1 AS CODE_NM
+			, NM_BIZAREA 	AS ETC1
+		FROM LBCMMBIZAREA
+		WHERE CD_COMPANY = '1000'
+			AND TRIM(DT_TOPEN) IS NULL OR DT_TOPEN > #{srchDtTopen}
+ 	]]>
+		ORDER BY CD_BIZAREA
+	</select>
+	<!-- 부서 코드를 가져오기 -->
+	<select id="selectDeptCodeBook" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			H_DEPT
+			, PAR_NM_DEPT
+			, LB_DEPT
+			, CD_BIZAREA	AS CODE_GRP
+			, CD_DEPT		AS CODE
+			, NM_DEPT		AS ETC1
+			, LPAD(' ', 5*(LEVEL-1)) || NM_DEPT AS CODE_NM	
+			, LEVEL
+		FROM (
+			SELECT
+				A.H_DEPT
+				, B.NM_DEPT PAR_NM_DEPT
+				, A.LB_DEPT
+				, A.CD_BIZAREA
+				, A.CD_DEPT
+				, A.NM_DEPT NM_DEPT
+			FROM LBCMMDEPT A LEFT OUTER JOIN LBCMMDEPT B ON A.H_DEPT = B.CD_DEPT 
+			WHERE 1=1
+	]]>
+			<if test="srchDtEnd != null and srchDtEnd != ''">
+				AND TRIM(A.DT_END) IS NULL OR A.DT_END > #{srchDtEnd}
+			</if>
+		)
+		START WITH H_DEPT IS NULL   
+		CONNECT BY PRIOR CD_DEPT = H_DEPT   
+		ORDER SIBLINGS BY CD_BIZAREA, cd_DEPT
+ 	
+	</select>
+	<!-- 사업장 코드를 가져오기(트리용) -->
+	<select id="selectBizareaTree" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			CD_COMPANY
+			, CD_BIZAREA
+			, NM_BIZAREA_L1
+			, NM_BIZAREA
+		FROM LBCMMBIZAREA
+		WHERE CD_COMPANY = '1000'
+			AND TRIM(DT_TOPEN) IS NULL OR DT_TOPEN > #{srchDtTopen}
+ 	]]>
+		ORDER BY CD_BIZAREA
+	</select>
+	<!-- 부서 코드를 가져오기(트리용) -->
+	<select id="selectDeptTree" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			H_DEPT
+			, PAR_NM_DEPT
+			, LB_DEPT
+			, CD_BIZAREA
+			, CD_DEPT
+			, NM_DEPT
+			, LPAD(' ', 5*(LEVEL-1)) || NM_DEPT TAP_NM_DEPT
+			, LEVEL
+		FROM (
+			SELECT
+				A.H_DEPT
+				, B.NM_DEPT PAR_NM_DEPT
+				, A.LB_DEPT
+				, A.CD_BIZAREA
+				, A.CD_DEPT
+				, A.NM_DEPT NM_DEPT
+			FROM LBCMMDEPT A LEFT OUTER JOIN LBCMMDEPT B ON A.H_DEPT = B.CD_DEPT 
+			WHERE 1=1
+	]]>
+			<if test="srchDtEnd != null and srchDtEnd != ''">
+				AND (TRIM(A.DT_END) IS NULL OR A.DT_END > #{srchDtEnd})
+			</if>
+		)
+		START WITH H_DEPT IS NULL   
+		CONNECT BY PRIOR CD_DEPT = H_DEPT   
+		ORDER SIBLINGS BY CD_BIZAREA, cd_DEPT
+ 	
+	</select>
+</mapper>

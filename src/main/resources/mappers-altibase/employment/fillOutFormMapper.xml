@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lbrcrt.mapper.fillOutFormMapper">
+	<!-- 지원자 정보 조회 -->
+	<select id="selectAplcntForm" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			APLCNT_ID
+			, KOR_NAME
+			, CHN_NAME
+			, ENG_NAME
+			, IHIDNUM
+			, SEX_CD
+			, ZIPCODE
+			, ADDR1
+			, ADDR2
+			, MOBILENUM
+			, PHONENUM
+			, EMAIL
+			, DISABLED_STTS_CD
+			, BOHUN_STTS_CD
+			, MARITAL_STTS_CD
+			, ENG_LV_CD
+			, JPN_LV_CD
+			, ETCLANG_LV_CD
+			, EXCEL_LV_CD
+			, PPT_LV_CD
+			, TYPING_SPD
+			, SPECIALTY
+			, HOBBY
+			, RELIGION
+			, MIL_DISCHARGED_CD
+			, MIL_SERV
+			, MIL_SDATE
+			, MIL_EDATE
+			, MIL_RANK_CD
+			, EXEMPTION_RSN
+			, FACT_AGRMNT_CD
+			, ETCLANG
+			, APLCNT_PHOTO_NM
+		FROM LBAPLCNTFORM
+	]]>
+		WHERE APLCNT_FORM_IDX = #{aplcntFormIdx}
+	</select>
+	<!-- 지원자 정보 미리보기 조회 -->
+	<select id="selectAplcntFormPreview" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			APLCNT_ID
+			, KOR_NAME
+			, CHN_NAME
+			, ENG_NAME
+			, IHIDNUM
+			, SEX_CD
+			, ZIPCODE
+			, ADDR1
+			, ADDR2
+			, MOBILENUM
+			, PHONENUM
+			, EMAIL
+			, FN_CMM_NM('DISABLEDSTTS', DISABLED_STTS_CD) DISABLED_STTS_CD 
+			, FN_CMM_NM('BOHUNSTTS', BOHUN_STTS_CD) BOHUN_STTS_CD
+			, FN_CMM_NM('MARITALSTTS', MARITAL_STTS_CD) MARITAL_STTS_CD
+			, FN_CMM_NM('LV5', ENG_LV_CD) ENG_LV_CD
+			, FN_CMM_NM('LV5', JPN_LV_CD) JPN_LV_CD
+			, FN_CMM_NM('LV5', ETCLANG_LV_CD) ETCLANG_LV_CD
+			, FN_CMM_NM('LV5', EXCEL_LV_CD) EXCEL_LV_CD
+			, FN_CMM_NM('LV5', PPT_LV_CD) PPT_LV_CD
+			, TYPING_SPD
+			, SPECIALTY
+			, HOBBY
+			, RELIGION
+			, FN_CMM_NM('MILDISCHARGED', MIL_DISCHARGED_CD) MIL_DISCHARGED_CD
+			, MIL_SERV
+			, MIL_SDATE
+			, MIL_EDATE
+			, FN_CMM_NM('MILRANK', MIL_RANK_CD) MIL_RANK_CD
+			, EXEMPTION_RSN
+			, FACT_AGRMNT_CD
+			, ETCLANG
+			, MODIFIED_DT
+			, APLCNT_PHOTO_NM
+		FROM LBAPLCNTFORM
+	]]>
+		WHERE APLCNT_FORM_IDX = #{aplcntFormIdx}
+	</select>
+	<!-- 지원자 기본 정보 저장 -->
+	<update id="updateAplcntForm" parameterType="hashmap">
+	UPDATE LBAPLCNTFORM SET
+		KOR_NAME = #{korName}
+		, CHN_NAME = #{chnName}
+		, ENG_NAME = #{engName}
+		, IHIDNUM = #{ihidnum}
+		, ADDR1 = #{addr1}
+		, ADDR2 = #{addr2}
+		, MOBILENUM = #{mobilenum}
+		, PHONENUM = #{phonenum}
+		, EMAIL = #{email}
+		, DISABLED_STTS_CD = #{disabledSttsCd}
+		, BOHUN_STTS_CD = #{maritalSttsCd}
+		, MARITAL_STTS_CD = #{disabledSttsCd}
+		, ENG_LV_CD = #{engLvCd}
+		, JPN_LV_CD = #{jpnLvCd}
+		, ETCLANG_LV_CD = #{etclangLvCd}
+		, EXCEL_LV_CD = #{excelLvCd}
+		, PPT_LV_CD = #{pptLvCd}
+		, TYPING_SPD = #{typingSpd}
+		, SPECIALTY = #{specialty}
+		, HOBBY = #{hobby}
+		, RELIGION = #{religion}
+		, MIL_DISCHARGED_CD = #{milDischargedCd}
+		, MIL_SERV = #{milServ}
+		, MIL_SDATE = #{milSdate}
+		, MIL_EDATE = #{milEdate}
+		, MIL_RANK_CD = #{milRankCd}
+		, EXEMPTION_RSN = #{exemptionRsn}
+		, FACT_AGRMNT_CD = #{factAgrmntCd}
+		, ETCLANG = #{etclang}
+		, MODIFIER_ID = #{aplcntId}
+		, MODIFIED_DT = SYSDATE
+		
+	WHERE 1=1
+		AND APLCNT_FORM_IDX  = #{aplcntFormIdx}
+	</update>
+	<!-- 지원자 사진 저장 -->
+	<update id="updateAplcntPhotoNm" parameterType="hashmap">
+	UPDATE LBAPLCNTFORM SET
+		APLCNT_PHOTO_NM = #{aplcntPhotoNm}
+		, MODIFIER_ID = #{aplcntId}
+		, MODIFIED_DT = SYSDATE
+	WHERE 1=1
+		AND APLCNT_FORM_IDX  = #{aplcntFormIdx}
+	</update>
+
+		<!-- 학력 조회 -->
+	<select id="selectSchoolInfo" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			APLCNT_ORG_IDX
+			, ORG_SDATE
+			, ORG_EDATE
+			, ORG_NAME
+			, ORG_DEPT
+			, ORG_STTS_CD
+			, ORG_LOC
+		FROM
+			LBAPLCNTORG
+		WHERE 1=1
+ 	]]>
+		<if test="aplcntFormIdx != null and aplcntFormIdx != ''">
+			AND APLCNT_FORM_IDX = #{aplcntFormIdx}
+		</if>
+		<if test="sectionCd != null and sectionCd != ''">
+			AND SECTION_CD = #{sectionCd}
+			AND USE_YN = 'Y'
+		</if>
+		ORDER BY ORG_SDATE
+	</select>
+		<!-- 학력 미리보기 조회 -->
+	<select id="selectSchoolInfoPreview" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			APLCNT_ORG_IDX
+			, ORG_SDATE
+			, ORG_EDATE
+			, ORG_NAME
+			, ORG_DEPT
+			, FN_CMM_NM('SCHOOLSTTS', ORG_STTS_CD) ORG_STTS_CD
+			, ORG_LOC
+		FROM
+			LBAPLCNTORG
+		WHERE 1=1
+ 	]]>
+		<if test="aplcntFormIdx != null and aplcntFormIdx != ''">
+			AND APLCNT_FORM_IDX = #{aplcntFormIdx}
+		</if>
+		<if test="sectionCd != null and sectionCd != ''">
+			AND SECTION_CD = #{sectionCd}
+			AND USE_YN = 'Y'
+		</if>
+		ORDER BY ORG_SDATE
+	</select>
+	<!-- 학력 등록 -->
+	<insert id="insertSchoolInfo" parameterType="hashmap">
+		INSERT INTO LBAPLCNTORG (
+			APLCNT_ORG_IDX
+			, APLCNT_FORM_IDX
+			, SECTION_CD
+			, ORG_SDATE
+			, ORG_EDATE
+			, ORG_NAME
+			, ORG_DEPT
+			, ORG_STTS_CD
+			, ORG_LOC
+			, USE_YN
+			, MODIFIER_ID
+			, MODIFIED_DT
+		) VALUES (
+			SEQ_LBAPLCNTORG.NEXTVAL
+			, #{aplcntFormIdx}
+			, #{sectionCd}
+			, #{sDate}
+			, #{eDate}
+			, #{schoolName}
+			, #{schoolMajor}
+			, #{schoolSttsCd}
+			, #{schoolLoc}
+			, 'Y'
+			, #{modifierId}
+			, SYSDATE
+		)
+	</insert>
+
+	<!-- 학력사항 수정 -->
+	<update id="updateSchoolInfo" parameterType="hashmap">
+		UPDATE LBAPLCNTORG SET
+			ORG_SDATE = #{sDate}
+			, ORG_EDATE = #{eDate}
+			, ORG_NAME = #{schoolName}
+			, ORG_DEPT = #{schoolMajor}
+			, ORG_STTS_CD = #{schoolSttsCd}
+			, ORG_LOC = #{schoolLoc}
+			, MODIFIER_ID = #{modifierId}
+			, MODIFIED_DT = SYSDATE
+		WHERE 1=1
+			AND APLCNT_ORG_IDX = #{aplcntOrgIdx}
+			
+	</update>
+	<!-- 학력 삭제(수정) -->
+	<update id="deleteSchoolInfo" parameterType="hashmap">
+		UPDATE LBAPLCNTORG SET
+			USE_YN = 'N'
+			, MODIFIER_ID = #{modifierId}
+			, MODIFIED_DT = SYSDATE
+		WHERE 1=1 
+			AND APLCNT_ORG_IDX = #{aplcntOrgIdx}
+	</update>
+	<!-- 경력 조회 -->
+	<select id="selectCompanyInfo" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			APLCNT_ORG_IDX
+			, ORG_SDATE
+			, ORG_EDATE
+			, ORG_NAME
+			, ORG_POS_CD
+			, ORG_DEPT
+			, ORG_SAL
+			, ORG_RESI_RSN
+		FROM
+			LBAPLCNTORG
+		WHERE USE_YN = 'Y'
+ 	]]>
+		<if test="aplcntFormIdx != null and aplcntFormIdx != ''">
+			AND APLCNT_FORM_IDX = #{aplcntFormIdx}
+		</if>
+		<if test="sectionCd != null and sectionCd != ''">
+			AND SECTION_CD = #{sectionCd}
+		</if>
+		ORDER BY ORG_SDATE
+	</select>
+	<!-- 경력 미리보기 조회 -->
+	<select id="selectCompanyInfoPreview" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			APLCNT_ORG_IDX
+			, ORG_SDATE
+			, ORG_EDATE
+			, ORG_NAME
+			, FN_CMM_NM('COMPANYPOS', ORG_POS_CD) ORG_POS_CD
+			, ORG_DEPT
+			, ORG_SAL
+			, ORG_RESI_RSN
+		FROM
+			LBAPLCNTORG
+		WHERE USE_YN = 'Y'
+ 	]]>
+		<if test="aplcntFormIdx != null and aplcntFormIdx != ''">
+			AND APLCNT_FORM_IDX = #{aplcntFormIdx}
+		</if>
+		<if test="sectionCd != null and sectionCd != ''">
+			AND SECTION_CD = #{sectionCd}
+		</if>
+		ORDER BY ORG_SDATE
+	</select>
+	<!-- 경력 등록 -->
+	<insert id="insertCompanyInfo" parameterType="hashmap">
+		INSERT INTO LBAPLCNTORG (
+			APLCNT_ORG_IDX
+			, APLCNT_FORM_IDX
+			, SECTION_CD
+			, ORG_SDATE
+			, ORG_EDATE
+			, ORG_NAME
+			, ORG_POS_CD
+			, ORG_DEPT
+			, ORG_SAL
+			, ORG_RESI_RSN
+			, USE_YN
+			, MODIFIER_ID
+			, MODIFIED_DT
+		) VALUES (
+			SEQ_LBAPLCNTORG.NEXTVAL
+			, #{aplcntFormIdx}
+			, #{sectionCd}
+			, #{sDate}
+			, #{eDate}
+			, #{companyName}
+			, #{companyPosCd}
+			, #{companyDept}
+			, #{companySal}
+			, #{companyResiRsn}
+			, 'Y'
+			, #{modifierId}
+			, SYSDATE
+		)
+	</insert>
+	<!-- 경력사항 수정 -->
+	<update id="updateCompanyInfo" parameterType="hashmap">
+		UPDATE LBAPLCNTORG SET
+			ORG_SDATE = #{sDate}
+			, ORG_EDATE = #{eDate}
+			, ORG_NAME = #{companyName}
+			, ORG_POS_CD = #{companyPosCd}
+			, ORG_DEPT = #{companyDept}
+			, ORG_SAL = #{companySal}
+			, ORG_RESI_RSN = #{companyResiRsn}
+			, MODIFIER_ID = #{modifierId}
+			, MODIFIED_DT = SYSDATE
+		WHERE APLCNT_ORG_IDX = #{aplcntOrgIdx}
+	</update>
+	<!-- 경력 삭제(수정) -->
+	<update id="deleteCompanyInfo" parameterType="hashmap">
+		UPDATE LBAPLCNTORG SET
+			USE_YN = 'N'
+			, MODIFIER_ID = #{modifierId}
+			, MODIFIED_DT = SYSDATE
+		WHERE 1=1 
+			AND APLCNT_ORG_IDX = #{aplcntOrgIdx}
+	</update>
+	<!-- 자격사항 조회 -->
+	<select id="selectCertiInfo" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			APLCNT_ORG_IDX
+			, ORG_SDATE
+			, ORG_NAME
+		FROM
+			LBAPLCNTORG
+		WHERE USE_YN = 'Y'
+ 	]]>
+		<if test="aplcntFormIdx != null and aplcntFormIdx != ''">
+			AND APLCNT_FORM_IDX = #{aplcntFormIdx}
+		</if>
+		<if test="sectionCd != null and sectionCd != ''">
+			AND SECTION_CD = #{sectionCd}
+		</if>
+		ORDER BY ORG_SDATE
+	</select>
+	<!-- 자격사항 조회 -->
+	<select id="selectCertiInfoPreview" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			APLCNT_ORG_IDX
+			, ORG_SDATE
+			, ORG_NAME
+		FROM
+			LBAPLCNTORG
+		WHERE USE_YN = 'Y'
+ 	]]>
+		<if test="aplcntFormIdx != null and aplcntFormIdx != ''">
+			AND APLCNT_FORM_IDX = #{aplcntFormIdx}
+		</if>
+		<if test="sectionCd != null and sectionCd != ''">
+			AND SECTION_CD = #{sectionCd}
+		</if>
+		ORDER BY ORG_SDATE
+	</select>
+	<!-- 자격사항 등록 -->
+	<insert id="insertCertiInfo" parameterType="hashmap">
+		INSERT INTO LBAPLCNTORG (
+			APLCNT_ORG_IDX
+			, APLCNT_FORM_IDX
+			, SECTION_CD
+			, ORG_SDATE
+			, ORG_NAME		
+			, USE_YN
+			, MODIFIER_ID
+			, MODIFIED_DT
+		) VALUES (
+			SEQ_LBAPLCNTORG.NEXTVAL
+			, #{aplcntFormIdx}
+			, #{sectionCd}
+			, #{sDate}
+			, #{certiName}
+			, 'Y'
+			, #{modifierId}
+			, SYSDATE
+		)
+	</insert>
+	<update id="updateCertiInfo" parameterType="hashmap">
+		UPDATE LBAPLCNTORG SET
+			ORG_SDATE = #{sDate}
+			, ORG_NAME = #{certiName}
+			, MODIFIER_ID = #{modifierId}
+			, MODIFIED_DT = SYSDATE
+		WHERE APLCNT_ORG_IDX = #{aplcntOrgIdx}
+	</update>
+	<!-- 자격사항 삭제(수정) -->
+	<update id="deleteCertiInfo" parameterType="hashmap">
+		UPDATE LBAPLCNTORG SET
+			USE_YN = 'N'
+			, MODIFIER_ID = #{modifierId}
+			, MODIFIED_DT = SYSDATE
+		WHERE APLCNT_ORG_IDX = #{aplcntOrgIdx}
+	</update>
+	<!-- 가족 조회 -->
+	<select id="selectFamInfo" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			APLCNT_FAM_IDX
+			, FAM_RELATIONS
+			, FAM_NAME
+			, FAM_AGE
+			, FAM_JOB
+			, FAM_TOGETHER_STTS_CD
+		FROM
+			LBAPLCNTFAM
+		WHERE USE_YN = 'Y'
+ 	]]>
+		<if test="aplcntFormIdx != null and aplcntFormIdx != ''">
+			AND APLCNT_FORM_IDX = #{aplcntFormIdx}
+		</if>
+		ORDER BY MODIFIED_DT
+	</select>
+	<!-- 가족 미리보기 조회 -->
+	<select id="selectFamInfoPreview" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			APLCNT_FAM_IDX
+			, FAM_RELATIONS
+			, FAM_NAME
+			, FAM_AGE
+			, FAM_JOB
+			, FN_CMM_NM('FAMTOGETHERSTTS', FAM_TOGETHER_STTS_CD) FAM_TOGETHER_STTS_CD
+		FROM
+			LBAPLCNTFAM
+		WHERE USE_YN = 'Y'
+ 	]]>
+		<if test="aplcntFormIdx != null and aplcntFormIdx != ''">
+			AND APLCNT_FORM_IDX = #{aplcntFormIdx}
+		</if>
+		ORDER BY MODIFIED_DT
+	</select>
+	<!-- 가족 등록 -->
+	<insert id="insertFamInfo" parameterType="hashmap">
+		INSERT INTO LBAPLCNTFAM (
+			APLCNT_FAM_IDX
+			, APLCNT_FORM_IDX
+			, FAM_RELATIONS
+			, FAM_NAME
+			, FAM_AGE
+			, FAM_JOB
+			, FAM_TOGETHER_STTS_CD		
+			, USE_YN
+			, MODIFIER_ID
+			, MODIFIED_DT
+		) VALUES (
+			SEQ_LBAPLCNTFAM.NEXTVAL
+			, #{aplcntFormIdx}
+			, #{famRelations}
+			, #{famName}
+			, #{famAge}
+			, #{famJob}
+			, #{famTogetherSttsCd}
+			, 'Y'
+			, #{modifierId}
+			, SYSDATE
+		)
+	</insert>
+	<!-- 가족 수정 -->
+	<update id="updateFamInfo" parameterType="hashmap">
+		UPDATE LBAPLCNTFAM SET
+			FAM_RELATIONS = #{famRelations}
+			, FAM_NAME = #{famName}
+			, FAM_AGE = #{famAge}
+			, FAM_JOB = #{famJob}
+			, FAM_TOGETHER_STTS_CD = #{famTogetherSttsCd}		
+			, MODIFIER_ID = #{modifierId}
+			, MODIFIED_DT = SYSDATE
+		WHERE APLCNT_FAM_IDX = #{aplcntFamIdx}
+	</update>
+	<!-- 가족 삭제(수정) -->
+	<update id="deleteFamInfo" parameterType="hashmap">
+		UPDATE LBAPLCNTFAM SET
+			USE_YN = 'N'
+			, MODIFIER_ID = #{modifierId}
+			, MODIFIED_DT = SYSDATE
+		WHERE APLCNT_FAM_IDX = #{aplcntFamIdx}
+	</update>
+</mapper>

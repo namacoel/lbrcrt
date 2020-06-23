@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+<!-- 참고교재에는 resources 폴더에logback.xml을 작성해야된다고 되어있느데 하기 내용을 log4j.xml의 양식에 맞추어 넣으니 적용이 잘 되므로 이 파일은 필요가 없지만 그냥 둠 -->
+    <!-- log4jdbc-log4j2 -->
+	<logger name="jdbc.sqlonly"        level="DEBUG"/>
+    <logger name="jdbc.sqltiming"      level="INFO"/>
+    <logger name="jdbc.audit"          level="WARN"/>
+    <logger name="jdbc.resultset"      level="ERROR"/>
+    <logger name="jdbc.resultsettable" level="ERROR"/>
+    <logger name="jdbc.connection"     level="INFO"/>
+</configuration>
+

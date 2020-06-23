@@ -1,0 +1,36 @@
+
+/* 2016.12.02.namacoel
+ * dataTable의 table이 가로 공백이 생기면 가운데 정렬이 되면서 마진이 생기는 현상 때문에 추가함
+ */
+table { 
+	margin: 0 !important;
+}
+table.table-common {
+    border-collapse: collapse;
+    text-align: left;
+    line-height: 1;
+	width: 100%;
+}
+table.table-common th {
+    padding: 5px 5px 5px 10px;
+    vertical-align: middle;
+    background: #F9F9F9;
+    border: 1px solid #ccc;
+	line-height: 1.82857143;
+    color: #333;
+    font-size: 12px;
+}
+table.table-common td {
+    padding: 0;
+    vertical-align: top;
+    border: 1px solid #ccc;
+    font-size: 12px;
+}
+table.table-common textarea {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0 0 0 5px;
+	border: 0;
+	resize: none;
+}

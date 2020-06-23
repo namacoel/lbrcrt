@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lbrcrt.mapper.aplcntFormMapper">
+
+	<!-- 지원자 등록 -->
+	<insert id="insertAplcntForm" parameterType="hashmap">
+		INSERT INTO LBAPLCNTLIST (
+			APLCNT_IDX
+			, RECEIPT_DATE
+			, APLCNT_BIZAREA
+			, APLCNT_DEPT
+			, APLCNT_CLASS
+			, EMPLY_NUM
+			, APLCNT_NM
+			, BIRTHDAY
+			, APLCNT_SEX
+			, ADDR_DO
+			, ADDR_SI
+			, ADDR_GU
+			, CONTACT_INFO
+			, EMAIL
+			, MARITAL_STTS
+			, HIGHEST_EDU
+			, MAJOR
+			, CAREER_STTS
+			, COMPANY1
+			, COMPANY_PERIOD1
+			, ASSIGNED_TASK1
+			, COMPANY2
+			, COMPANY_PERIOD2
+			, ASSIGNED_TASK2
+			, RECRUIT_SITE1
+			, RECRUIT_SITE2
+			, RECOMMENDER
+			, DOC_ITVW
+			, PHONE_ITVW
+			, PHONE_ITVW_RESULT
+			, PTOP_ITVW
+			, INTERVIEWER
+			, ITVW_DATE
+			, ITVW_TIME
+			, ITVW_ATTD
+			, ITVW_RESULT
+			, EDU_ATTD_ITTN_STTS
+			, EDU_ATTD_STTS
+			, EDU_DATE
+			, JOB_DAY
+			, PUT_DAY
+			, QUIT_DAY
+			, INID
+			, UPID
+			, BLACKLIST
+		) VALUES (
+			SEQ_LBAPLCNTLIST.NEXTVAL
+			, #{receiptDate}
+			, #{aplcntBizarea}
+			, #{aplcntDept}
+			, #{aplcntClass}
+			, #{emplyNum}
+			, #{aplcntNm}
+			, #{birthday}
+			, #{aplcntSex}
+			, #{addrDo}
+			, #{addrSi}
+			, #{addrGu}
+			, #{contactInfo}
+			, #{email}
+			, #{maritalStts}
+			, #{highestEdu}
+			, #{major}
+			, #{careerStts}
+			, #{company1}
+			, #{companyPeriod1}
+			, #{assignedTask1}
+			, #{company2}
+			, #{companyPeriod2}
+			, #{assignedTask2}
+			, #{recruitSite1}
+			, #{recruitSite2}
+			, #{recommender}
+			, #{docItvw}
+			, #{phoneItvw}
+			, #{phoneItvwResult}
+			, #{ptopItvw}
+			, #{interviewer}
+			, #{itvwDate}
+			, #{itvwTime}
+			, #{itvwAttd}
+			, #{itvwResult}
+			, #{eduAttdIttnStts}
+			, #{eduAttdStts}
+			, #{eduDate}
+			, #{jobDay}
+			, #{putDay}
+			, #{quitDay}
+			, #{loginId}
+			, #{loginId}
+			, #{blacklist}
+		)
+	</insert>
+	<update id="updateAplcntForm" parameterType="hashmap">
+	UPDATE LBAPLCNTLIST SET
+		RECEIPT_DATE = #{receiptDate}
+		, APLCNT_BIZAREA = #{aplcntBizarea}
+		, APLCNT_DEPT = #{aplcntDept}
+		, APLCNT_CLASS = #{aplcntClass}
+		, EMPLY_NUM = #{emplyNum} 
+		, APLCNT_NM = #{aplcntNm}
+		, BIRTHDAY = #{birthday}
+		, APLCNT_SEX = #{aplcntSex}
+		, ADDR_DO = #{addrDo}   
+		, ADDR_SI = #{addrSi}   
+		, ADDR_GU = #{addrGu}
+		, CONTACT_INFO = #{contactInfo}
+		, EMAIL = #{email}
+		, MARITAL_STTS = #{maritalStts}
+		, HIGHEST_EDU = #{highestEdu}   
+		, MAJOR = #{major}
+		, CAREER_STTS = #{careerStts}
+		, COMPANY1 = #{company1}  
+		, COMPANY_PERIOD1 = #{companyPeriod1}
+		, ASSIGNED_TASK1 = #{assignedTask1}
+		, COMPANY2 = #{company2}
+		, COMPANY_PERIOD2 = #{companyPeriod2}
+		, ASSIGNED_TASK2 = #{assignedTask2}
+		, RECRUIT_SITE1 = #{recruitSite1} 
+		, RECRUIT_SITE2 = #{recruitSite2}
+		, RECOMMENDER = #{recommender}
+		, DOC_ITVW = #{docItvw}
+		, PHONE_ITVW = #{phoneItvw}
+		, PHONE_ITVW_RESULT = #{phoneItvwResult}
+		, PTOP_ITVW = #{ptopItvw}
+		, INTERVIEWER = #{interviewer}
+		, ITVW_DATE = #{itvwDate}
+		, ITVW_TIME = #{itvwTime}
+		, ITVW_ATTD = #{itvwAttd}
+		, ITVW_RESULT = #{itvwResult}
+		, EDU_ATTD_ITTN_STTS = #{eduAttdIttnStts}
+		, EDU_ATTD_STTS = #{eduAttdStts}
+		, EDU_DATE = #{eduDate}      
+		, JOB_DAY = #{jobDay}       
+		, PUT_DAY = #{putDay}       
+		, QUIT_DAY = #{quitDay}
+		, UPID = #{loginId}
+		, UPDT = SYSDATE
+		, BLACKLIST = #{blacklist}
+	WHERE APLCNT_IDX = #{aplcntIdx}
+	</update>
+	<!-- 지원자 정보 조회 -->
+	<select id="selectAplcntForm" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			APLCNT_IDX
+			, RECEIPT_DATE
+			, APLCNT_BIZAREA
+			, APLCNT_DEPT
+			, APLCNT_CLASS
+			, EMPLY_NUM
+			, APLCNT_NM
+			, BIRTHDAY
+			, APLCNT_SEX
+			, ADDR_DO
+			, ADDR_SI
+			, ADDR_GU
+			, CONTACT_INFO
+			, EMAIL
+			, MARITAL_STTS
+			, HIGHEST_EDU
+			, MAJOR
+			, CAREER_STTS
+			, COMPANY1
+			, COMPANY_PERIOD1
+			, ASSIGNED_TASK1
+			, COMPANY2
+			, COMPANY_PERIOD2
+			, ASSIGNED_TASK2
+			, RECRUIT_SITE1
+			, RECRUIT_SITE2
+			, RECOMMENDER
+			, DOC_ITVW
+			, PHONE_ITVW
+			, PHONE_ITVW_RESULT
+			, PTOP_ITVW
+			, INTERVIEWER
+			, ITVW_DATE
+			, ITVW_TIME
+			, ITVW_ATTD
+			, ITVW_RESULT
+			, EDU_ATTD_ITTN_STTS
+			, EDU_ATTD_STTS
+			, EDU_DATE
+			, JOB_DAY
+			, PUT_DAY
+			, QUIT_DAY
+			, INID
+			, INDT
+			, UPID
+			, UPDT
+			, BLACKLIST
+		FROM LBAPLCNTLIST
+	]]>
+		WHERE APLCNT_IDX = #{aplcntIdx}
+	</select>
+	<!-- 지원자 정보 팝업시 view -->
+	<select id="selectAplcntFormView" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			APLCNT_IDX
+			, RECEIPT_DATE
+			, FN_GET_BIZAREA(APLCNT_BIZAREA) APLCNT_BIZAREA
+			, FN_GET_DEPT(APLCNT_DEPT) APLCNT_DEPT
+			, APLCNT_CLASS
+			, EMPLY_NUM
+			, APLCNT_NM
+			, BIRTHDAY
+			, APLCNT_SEX APLCNT_SEX_CD
+			, FN_CMM_NM('SEX', APLCNT_SEX) APLCNT_SEX 
+			, ADDR_DO ADDR_DO_CD
+			, ADDR_SI ADDR_SI_CD
+			, ADDR_GU ADDR_GU_CD
+			, FN_CMM_ADDR(ADDR_DO) ADDR_DO
+			, FN_CMM_ADDR(ADDR_SI) ADDR_SI
+			, FN_CMM_ADDR(ADDR_GU) ADDR_GU
+			, CONTACT_INFO
+			, EMAIL
+			, MARITAL_STTS MARITAL_STTS_CD
+			, FN_CMM_NM('OXSTTS', MARITAL_STTS) MARITAL_STTS 
+			, HIGHEST_EDU HIGHEST_EDU_CD
+			, FN_CMM_NM('HIGHESTEDU', HIGHEST_EDU) HIGHEST_EDU 
+			, MAJOR
+			, CAREER_STTS CAREER_STTS_CD
+			, FN_CMM_NM('OXSTTS', CAREER_STTS) CAREER_STTS
+			, COMPANY1
+			, COMPANY_PERIOD1
+			, ASSIGNED_TASK1
+			, COMPANY2
+			, COMPANY_PERIOD2
+			, ASSIGNED_TASK2
+			, BLACKLIST BLACKLIST_CD
+			, FN_CMM_NM('OXSTTS', BLACKLIST) BLACKLIST
+			, FN_CMM_NM('RECRUITSITE1', RECRUIT_SITE1) RECRUIT_SITE1
+			, FN_GET_RCS2('RECRUITSITE2', RECRUIT_SITE2, RECRUIT_SITE1) RECRUIT_SITE2
+			, RECOMMENDER
+			, DOC_ITVW
+			, PHONE_ITVW
+			, FN_CMM_NM('PHONEITVWRESULT', PHONE_ITVW_RESULT) PHONE_ITVW_RESULT
+			, PTOP_ITVW
+			, INTERVIEWER
+			, ITVW_DATE
+			, ITVW_TIME
+			, FN_CMM_NM('ATTDSTTS', ITVW_ATTD) ITVW_ATTD
+			, FN_CMM_NM('ITVWRESULT', ITVW_RESULT) ITVW_RESULT
+			, FN_CMM_NM('ATTDSTTS', EDU_ATTD_ITTN_STTS) EDU_ATTD_ITTN_STTS
+			, FN_CMM_NM('ATTDSTTS', EDU_ATTD_STTS) EDU_ATTD_STTS
+			, EDU_DATE
+			, JOB_DAY
+			, PUT_DAY
+			, QUIT_DAY
+			, INID
+			, INDT
+			, UPID
+			, UPDT
+		FROM LBAPLCNTLIST
+	]]>
+		WHERE APLCNT_IDX = #{aplcntIdx}
+	</select>
+	<!-- 중복 사번 조회 -->
+	<select id="checkDupEmplyNum" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			APLCNT_IDX
+			, RECEIPT_DATE
+			, FN_GET_BIZAREA(APLCNT_BIZAREA) APLCNT_BIZAREA
+			, FN_GET_DEPT(APLCNT_DEPT) APLCNT_DEPT
+			, APLCNT_CLASS
+			, EMPLY_NUM
+			, APLCNT_NM
+			, BIRTHDAY
+			, FN_CMM_NM('SEX', APLCNT_SEX) APLCNT_SEX 
+			, CONTACT_INFO
+		FROM LBAPLCNTLIST 
+	]]>
+		WHERE EMPLY_NUM = #{emplyNum}
+			<!-- APLCNT_IDX의 값이 공백으로 오는경우에 조건문이 적용되지 않도록 하기 위함 -->
+			<if test="aplcntIdx != null and aplcntIdx != ''">
+				AND APLCNT_IDX != #{aplcntIdx}
+			</if>
+			
+		ORDER BY APLCNT_IDX DESC
+	</select>
+	<!-- 중복자 지원 목록 조회 -->
+	<select id="checkDupAplcnt" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			APLCNT_IDX
+			, RECEIPT_DATE
+			, FN_GET_BIZAREA(APLCNT_BIZAREA) APLCNT_BIZAREA
+			, FN_GET_DEPT(APLCNT_DEPT) APLCNT_DEPT
+			, APLCNT_CLASS
+			, EMPLY_NUM
+			, APLCNT_NM
+			, BIRTHDAY
+			, FN_CMM_NM('SEX', APLCNT_SEX) APLCNT_SEX 
+			, CONTACT_INFO
+			, EMAIL
+			, FN_CMM_NM('OXSTTS', BLACKLIST) BLACKLIST
+		FROM LBAPLCNTLIST 
+	]]>
+		WHERE APLCNT_NM = #{aplcntNm}
+			AND BIRTHDAY LIKE #{birthday} || '%'
+			AND APLCNT_SEX = #{aplcntSex}
+			<!-- APLCNT_IDX의 값이 공백으로 오는경우에 조건문이 적용되지 않도록 하기 위함 -->
+			<if test="aplcntIdx != null and aplcntIdx != ''">
+				AND APLCNT_IDX != #{aplcntIdx}
+			</if>
+			
+		ORDER BY APLCNT_IDX DESC
+	</select>
+
+	<!-- 지원자 목록 전체건수 조회 -->
+	<select id="selectAplcntListTotalCount" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			COUNT(APLCNT_IDX) TOTAL_COUNT
+		FROM LBAPLCNTLIST
+		WHERE APLCNT_IDX > 0
+		]]>
+		<if test="srchBizarea != null and srchBizarea != ''">
+			AND APLCNT_BIZAREA = #{srchBizarea}
+		</if>
+		<if test="srchDept != null and srchDept != ''">
+			AND APLCNT_DEPT = #{srchDept}
+		</if>
+		<if test="srchAplcntClass != null and srchAplcntClass != ''">
+			AND APLCNT_CLASS = #{srchAplcntClass}
+		</if>
+		<if test="srchPhoneItvwResult != null and srchPhoneItvwResult != ''">
+			AND PHONE_ITVW_RESULT = #{srchPhoneItvwResult}
+		</if>
+		<if test="srchItvwDate != null and srchItvwDate != ''">
+			AND ITVW_DATE = #{srchItvwDate}
+		</if>
+		<if test="srchItvwResult != null and srchItvwResult != ''">
+			AND ITVW_RESULT = #{srchItvwResult}
+		</if>
+		<if test="srchAplcntNm != null and srchAplcntNm != ''">
+			AND APLCNT_NM = #{srchAplcntNm}
+		</if>
+		<if test="srchBirthdayY != null and srchBirthdayY != ''">
+			AND BIRTHDAY LIKE #{srchBirthdayY} || '%'
+		</if>
+		<if test="srchContactInfo != null and srchContactInfo != ''">
+			AND CONTACT_INFO LIKE '%'||#{srchContactInfo}||'%'
+		</if>
+		<if test="srchUserId != null and srchUserId != ''">
+			AND (INID = #{srchUserId} OR UPID = #{srchUserId})
+		</if>
+	
+	</select>
+	<!-- 지원자 목록 조회 -->
+	<select id="selectAplcntListPaging" parameterType="hashmap" resultType="whashmap">
+	<![CDATA[
+		SELECT
+			* 
+		FROM (
+			SELECT /*+ INDEX DESC (LBAPLCNTLIST LBAPLCNTLIST_PK) */
+				ROWNUM RN
+				, APLCNT_IDX
+				, RECEIPT_DATE
+				, FN_GET_BIZAREA(APLCNT_BIZAREA) APLCNT_BIZAREA
+				, FN_GET_DEPT(APLCNT_DEPT) APLCNT_DEPT
+				, APLCNT_CLASS
+				, EMPLY_NUM
+				, APLCNT_NM
+				, BIRTHDAY
+				, FN_CMM_NM('SEX', APLCNT_SEX) APLCNT_SEX 
+				, FN_CMM_ADDR(ADDR_DO) ADDR_DO_NM
+				, FN_CMM_ADDR(ADDR_SI) ADDR_SI_NM
+				, FN_CMM_ADDR(ADDR_GU) ADDR_GU_NM
+				, CONTACT_INFO
+				, EMAIL
+				, FN_CMM_NM('OXSTTS', MARITAL_STTS) MARITAL_STTS 
+				, FN_CMM_NM('HIGHESTEDU', HIGHEST_EDU) HIGHEST_EDU 
+				, MAJOR
+				, FN_CMM_NM('OXSTTS', CAREER_STTS) CAREER_STTS
+				, COMPANY1
+				, COMPANY_PERIOD1
+				, ASSIGNED_TASK1
+				, COMPANY2
+				, COMPANY_PERIOD2
+				, ASSIGNED_TASK2
+				, FN_CMM_NM('OXSTTS', BLACKLIST) BLACKLIST
+				, FN_CMM_NM('RECRUITSITE1', RECRUIT_SITE1) RECRUIT_SITE1
+				, FN_GET_RCS2('RECRUITSITE2', RECRUIT_SITE2, RECRUIT_SITE1) RECRUIT_SITE2
+				, DOC_ITVW
+				, PHONE_ITVW
+				, FN_CMM_NM('PHONEITVWRESULT', PHONE_ITVW_RESULT) PHONE_ITVW_RESULT
+				, PTOP_ITVW
+				, INTERVIEWER
+				, ITVW_DATE
+				, ITVW_TIME
+				, FN_CMM_NM('ATTDSTTS', ITVW_ATTD) ITVW_ATTD
+				, FN_CMM_NM('ITVWRESULT', ITVW_RESULT) ITVW_RESULT
+				, FN_CMM_NM('ATTDSTTS', EDU_ATTD_ITTN_STTS) EDU_ATTD_ITTN_STTS
+				, FN_CMM_NM('ATTDSTTS', EDU_ATTD_STTS) EDU_ATTD_STTS
+				, EDU_DATE
+				, JOB_DAY
+				, PUT_DAY
+				, QUIT_DAY
+				, INID
+				, TO_CHAR(INDT, 'YYYYMMDD') INDT
+				, UPID
+				, TO_CHAR(UPDT, 'YYYYMMDD') UPDT
+			FROM LBAPLCNTLIST 
+			WHERE 1=1
+	]]>
+				AND APLCNT_IDX > 0
+			<if test="srchBizarea != null and srchBizarea != ''">
+			AND APLCNT_BIZAREA = #{srchBizarea}
+			</if>
+			<if test="srchDept != null and srchDept != ''">
+				AND APLCNT_DEPT = #{srchDept}
+			</if>
+			<if test="srchAplcntClass != null and srchAplcntClass != ''">
+				AND APLCNT_CLASS = #{srchAplcntClass}
+			</if>
+			<if test="srchPhoneItvwResult != null and srchPhoneItvwResult != ''">
+				AND PHONE_ITVW_RESULT = #{srchPhoneItvwResult}
+			</if>
+			<if test="srchItvwDate != null and srchItvwDate != ''">
+				AND ITVW_DATE = #{srchItvwDate}
+			</if>
+			<if test="srchItvwResult != null and srchItvwResult != ''">
+				AND ITVW_RESULT = #{srchItvwResult}
+			</if>
+			<if test="srchAplcntNm != null and srchAplcntNm != ''">
+				AND APLCNT_NM = #{srchAplcntNm}
+			</if>
+			<if test="srchBirthdayY != null and srchBirthdayY != ''">
+				AND BIRTHDAY LIKE #{srchBirthdayY} || '%'
+			</if>
+			<if test="srchContactInfo != null and srchContactInfo != ''">
+				AND CONTACT_INFO LIKE '%'||#{srchContactInfo}||'%'
+			</if>
+			<if test="srchUserId != null and srchUserId != ''">
+				AND (INID = #{srchUserId} OR UPID = #{srchUserId})
+			</if>
+	<![CDATA[			
+				AND ROWNUM <= #{page} * #{perPageNum}
+		)
+		WHERE RN > ((#{page}-1) * #{perPageNum})
+	]]>
+	</select>
+
+
+	<!-- 지원자 엑셀 업로드 : SQL문의 INSERT절과 SELECT절 컬럼순서가 일치해야 함!!-->
+	<!-- <insert id="insertAplcntArray" parameterType="hashmap">
+		INSERT INTO LBAPLCNTLIST (
+			APLCNT_IDX
+			, INID
+            , UPID
+			, RECEIPT_DATE
+			, APLCNT_COMPANY
+			, APLCNT_BIZAREA
+			, APLCNT_DEPT
+			, APLCNT_CLASS
+			, EMPLY_NUM
+			, APLCNT_NM
+			, BIRTHDAY
+			, APLCNT_SEX
+			, CONTACT_INFO
+			, ADDR_DO
+			, ADDR_SI
+			, ADDR_GU
+			, EMAIL
+			, HIGHEST_EDU
+			, MAJOR
+			, CAREER_STTS
+			, COMPANY1
+			, COMPANY_PERIOD1
+			, ASSIGNED_TASK1
+			, COMPANY2
+			, COMPANY_PERIOD2
+			, ASSIGNED_TASK2
+			, BLACKLIST
+			, RECRUIT_SITE1
+			, RECRUIT_SITE2
+			, RECOMMENDER
+			, DOC_ITVW
+			, JOB_DAY
+			, QUIT_DAY
+		)
+		SELECT
+			SEQ_LBAPLCNTLIST.NEXTVAL APLCNT_IDX
+			, CAST(#{loginId} AS VARCHAR(20)) AS INID
+			, CAST(#{loginId} AS VARCHAR(20)) AS UPID
+			, A.*
+		FROM (
+			<foreach collection="mapList" item="item" separator="UNION ALL">
+			SELECT 
+				CAST(#{item.receiptDate} AS VARCHAR(8)) RECEIPT_DATE
+				, CAST(#{item.aplcntCompany} AS VARCHAR(7)) APLCNT_COMPANY
+				, CAST(#{item.aplcntBizarea} AS VARCHAR(7)) APLCNT_BIZAREA
+				, CAST(#{item.aplcntDept} AS VARCHAR(12)) APLCNT_DEPT
+				, CAST(#{item.aplcntClass} AS NUMERIC(4)) APLCNT_CLASS
+				, CAST(#{item.emplyNum} AS VARCHAR(10)) EMPLY_NUM
+				, CAST(#{item.aplcntNm} AS NVARCHAR(50)) APLCNT_NM
+				, CAST(#{item.birthday} AS VARCHAR(8)) BIRTHDAY
+				, CAST(#{item.aplcntSex} AS VARCHAR(1)) APLCNT_SEX
+				, CAST(#{item.contactInfo} AS VARCHAR(20)) CONTACT_INFO
+				, CAST(#{item.addrDo} AS VARCHAR(20)) ADDR_DO
+				, CAST(#{item.addrSi} AS VARCHAR(20)) ADDR_SI
+				, CAST(#{item.addrGu} AS VARCHAR(20)) ADDR_GU
+				, CAST(#{item.email} AS VARCHAR(20)) EMAIL
+				, CAST(#{item.highestEdu} AS VARCHAR(20)) HIGHEST_EDU
+				, CAST(#{item.major} AS VARCHAR(20)) MAJOR
+				, CAST(#{item.careerStts} AS VARCHAR(20)) CAREER_STTS
+				, CAST(#{item.company1} AS VARCHAR(20)) COMPANY1
+				, CAST(#{item.companyPeriod1} AS VARCHAR(20)) COMPANY_PERIOD1
+				, CAST(#{item.assignedTask1} AS VARCHAR(20)) ASSIGNED_TASK1
+				, CAST(#{item.company2} AS VARCHAR(20)) COMPANY2
+				, CAST(#{item.companyPeriod2} AS VARCHAR(20)) COMPANY_PERIOD2
+				, CAST(#{item.assignedTask2} AS VARCHAR(20)) ASSIGNED_TASK2
+				, CAST(#{item.blacklist} AS VARCHAR(20)) BLACKLIST
+				, CAST(#{item.recruitSite1} AS VARCHAR(20)) RECRUIT_SITE1
+				, CAST(#{item.recruitSite2} AS VARCHAR(20)) RECRUIT_SITE2
+				, CAST(#{item.recommender} AS VARCHAR(50)) RECOMMENDER
+				, CAST(#{item.docItvw} AS VARCHAR(20)) DOC_ITVW
+				, CAST(#{item.jobDay} AS VARCHAR(8)) JOB_DAY
+				, CAST(#{item.quitDay} AS VARCHAR(8)) QUIT_DAY
+			FROM DUAL
+			</foreach>
+		) A
+	</insert> -->
+	<!-- 지원자 엑셀 업로드 : SQL문의 INSERT절과 SELECT절 컬럼순서가 일치해야 함!!-->
+	<insert id="insertAplcntListExcel" parameterType="hashmap">
+		INSERT INTO LBAPLCNTLIST (
+			APLCNT_IDX
+			, INID
+            , UPID
+			, RECEIPT_DATE
+			, APLCNT_COMPANY
+			, APLCNT_BIZAREA
+			, APLCNT_DEPT
+			, APLCNT_CLASS
+			, EMPLY_NUM
+			, APLCNT_NM
+			, BIRTHDAY
+			, APLCNT_SEX
+			, CONTACT_INFO
+			, ADDR_DO
+			, ADDR_SI
+			, ADDR_GU
+			, EMAIL
+			, HIGHEST_EDU
+			, MAJOR
+			, CAREER_STTS
+			, COMPANY1
+			, COMPANY_PERIOD1
+			, ASSIGNED_TASK1
+			, COMPANY2
+			, COMPANY_PERIOD2
+			, ASSIGNED_TASK2
+			, BLACKLIST
+			, RECRUIT_SITE1
+			, RECRUIT_SITE2
+			, RECOMMENDER
+			, DOC_ITVW
+			, JOB_DAY
+			, QUIT_DAY
+		) VALUES (
+			SEQ_LBAPLCNTLIST.NEXTVAL
+			, #{loginId}
+			, #{loginId}
+			, #{receiptDate}
+			, #{aplcntCompany}
+			, #{aplcntBizarea}
+			, #{aplcntDept}
+			, #{aplcntClass}
+			, #{emplyNum}
+			, #{aplcntNm}
+			, #{birthday}
+			, #{aplcntSex}
+			, #{contactInfo}
+			, #{addrDo}
+			, #{addrSi}
+			, #{addrGu}
+			, #{email}
+			, #{highestEdu}
+			, #{major}
+			, #{careerStts}
+			, #{company1}
+			, #{companyPeriod1}
+			, #{assignedTask1}
+			, #{company2}
+			, #{companyPeriod2}
+			, #{assignedTask2}
+			, #{blacklist}
+			, #{recruitSite1}
+			, #{recruitSite2}
+			, #{recommender}
+			, #{docItvw}
+			, #{jobDay}
+			, #{quitDay}
+		)
+	</insert>
+	
+<!-- 	<select id="selectAplcntListDupCnt" parameterType="hashmap" resultType="whashmap">
+		<foreach collection="mapList" item="item" separator="UNION ALL">
+			SELECT CAST(#{item.sortOrder} AS NUMBER) IDX, COUNT(*) CNT FROM LBAPLCNTLIST WHERE APLCNT_NM = #{item.aplcntNm} AND BIRTHDAY LIKE #{item.birthday} || '%' AND APLCNT_SEX = #{item.aplcntSex}
+		</foreach>
+	</select> -->
+	
+	<select id="selectAplcntListDupCnt" parameterType="hashmap" resultType="whashmap">
+		SELECT COUNT(*) CNT FROM LBAPLCNTLIST
+		WHERE APLCNT_NM = #{aplcntNm} 
+			AND BIRTHDAY LIKE #{birthday} || '%' 
+			AND APLCNT_SEX = #{aplcntSex}
+	</select>
+</mapper>
