@@ -73,4 +73,11 @@ public class TestController {
 		return entity;
 	}
 
+	
+	/** chart.js 테스트 화면 */
+	@RequestMapping(value="/testChartjs", method=RequestMethod.GET)
+	public String chartemplUpload() {
+		logger.info("testChartjs called...");
+		return path+ "testChartjs";
+	}
 }

@@ -20,12 +20,93 @@ var _pObj = {
 		}
 	}
 }
+
+/* chartjs 그래프 색세팅 */
+var chartColors = {
+	red : "rgb(255, 99, 132)",
+	orange : "rgb(255, 159, 64)",
+	yellow : "rgb(255, 205, 86)",
+	green : "rgb(75, 192, 192)",
+	blue : "rgb(54, 162, 235)",
+	purple : "rgb(153, 102, 255)",
+	grey : "rgb(201, 203, 207)",
+};
+
+var color = Chart.helpers.color;
+var colorNames = Object.keys(chartColors);
+var _aChart = "";
+var _aChartData = {};
+
+Chart.Legend.prototype.afterFit = function() {
+    this.height = this.height + 10;
+};
+
 /**************************************************
  * 페이징 로딩 전 설정
  **************************************************/
 $(document).ready(function() {
 	_pObj.initDropDown();
 	
+	var chartInfo = {
+			type : "bar",
+			data : _aChartData,
+			options : {
+				maintainAspectRatio: false,
+				responsive : true,
+				legend : {
+					position : "top",
+					labels: {
+//						fontSize: 10
+					}
+				},
+				title : {
+					display : false,
+					text : "차트",
+				},
+				scales: {
+					xAxes: [{
+						ticks: {
+//							fontSize: 10
+						}
+					}],
+					yAxes: [{
+						ticks: {
+							beginAtZero:true,
+							max: 10, // 데이터 조회시 갱신되게 로직 추가한다.
+							stepSize: 10, // y축 간격 크기
+						}
+					}]
+				},
+				events: [], // 마우스 이벤트 설정; []이면 아무것도 실행하지 않는다.
+				animation: {
+					onComplete: function(animation) {
+						// 그래프가 그려지면 값이 표시되도록 한다.
+				        var ctx = this.chart.ctx;
+				        ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontFamily, 'normal', Chart.defaults.global.defaultFontFamily);
+				        ctx.fillStyle = 'gray';
+				        ctx.textAlign = 'center';
+				        ctx.textBaseline = 'bottom';
+//				        ctx.width = '600px';
+//				        ctx.height = '200px';
+
+				        this.data.datasets.forEach(function (dataset) {
+				        	for (var i = 0; i < dataset.data.length; i++) {
+				                for(var key in dataset._meta) {
+				                    var model = dataset._meta[key].data[i]._model;
+				                    ctx.fillText(dataset.data[i], model.x, model.y - 5);
+				                }
+				            }
+				        });
+					}
+				}
+			},
+	};
+	
+	var ctx = document.getElementById("aChart");
+	_aChart = new Chart(ctx, chartInfo);
+	
+	$("#modalWrapper").draggable({}); // 드래그 가능 설정
+		
 	$("#srchDate").val(__toDateFormat(__getDate().left(8),"-"));
 	$("#srchDate").trigger("change");
 });
@@ -35,7 +116,7 @@ $(document).ready(function() {
  **************************************************/
 /** 조회날짜 change 이벤트 */
 $(document).on("change", " #srchDate", function() {
-	selectList1();
+//	selectList1(); // 사용안함 2020.07.09
 	selectList2();
 	selectList3();
 });
@@ -159,6 +240,14 @@ $(document).on("click", "#tblStatRcrtReport tr td", function() {
 	window.open("employment/statRcrtStatusPop?flag="+flag+cdCompany+cdBizarea+cdDept+deptClass+resultTitle
 			, "statRcrtStatusPop", "left=0, top=50, width=1880, height=650");
 });
+
+$(document).on("mouseover", "#btnModal", function() {
+	$("#btnModal .fa-bar-chart").attr("style", "font-size:16px;transition: all 0.25s");
+});
+$(document).on("mouseout", "#btnModal", function() {
+	$("#btnModal .fa-bar-chart").attr("style", "font-size:14px;transition: all 0.25s");
+});
+
 /**************************************************
  * 일반 함수 정의
  **************************************************/
@@ -169,6 +258,30 @@ function submitCheck() {
 		$("#btnPrevDay, #btnNextDay").attr("disabled", false);
 	}, 1500);
 }
+
+$(document).on("click", "#btnModal", function() {
+	if($("#modalWrapper").css("display") == "none") {
+		$("#modalWrapper").fadeIn();
+	} else {
+		$("#modalWrapper").fadeOut();
+	}
+});
+
+/** 차트의 데이터셋을 삭제한다. */
+function removeAllDataset() {
+	var datasetCnt = _aChart.data.datasets.length;
+	
+	var labelsCnt = _aChartData.labels.length;
+	for (var i=0;i<labelsCnt;i++) {
+		_aChartData.labels.splice(-1, 1); // remove the label first
+		_aChartData.datasets.forEach(function (dataset) {
+			dataset.data.pop();
+		});
+	}
+	
+	_aChart.update();
+}
+
 /**************************************************
  * CRUD 함수 정의
  **************************************************/
@@ -281,6 +394,13 @@ function selectList2() {
 		}
 		
 		if(rs.length>0) {
+			
+			/* 차트 사용 변수 */
+			var arrChartUniqItvwDate = []; //날짜담기(5일치 중복제거)
+			var arrChartUniqCdBizarea = []; //사업장 가져오기(중복제거)
+			var arrData = []; // 리스트로 데이터 담기
+			var arrTemp = []; // 임시
+			
 			var arrItvwDate = [];
 //			var arrCdCompany = new Array;
 //			var arrCdBizarea = new Array;
@@ -296,6 +416,13 @@ function selectList2() {
 				if(!isNull(tempItvwDate)) arrItvwDate.push(tempItvwDate);
 //				if(!isNull(tempCdCompany)) arrCdCompany.push(tempCdCompany);
 //				if(!isNull(tempCdBizarea)) arrCdBizarea.push(tempCdBizarea);
+				
+				/* 차트 값 세팅 */
+				arrChartUniqItvwDate.includes(rs[i].srchDate) ||  arrChartUniqItvwDate.push(rs[i].srchDate);
+				// 회사구분은 처리 안했으니 참고...(현재는 무조건 1000임)
+				arrChartUniqCdBizarea.includes(rs[i].nmBizarea) ||  arrChartUniqCdBizarea.push(rs[i].nmBizarea);
+				arrData.push(rs[i].itvwWatingCnt);
+				
 			}
 			
 			var arrUniqItvwDate = arrItvwDate.slice().sort(function(a,b){return a - b}).reduce(function(a,b){if (a.slice(-1)[0] !== b) a.push(b);return a;},[]);
@@ -451,6 +578,56 @@ function selectList2() {
 				tbody.appendChild(tbodyTr);
 			}
 			node.appendChild(tbody);
+			
+			
+
+			/* 차트 그리기 시작 (변수는 위에 선언 한다. rs 반복문 중복을 막으려고) */			
+			removeAllDataset();
+
+			// y축 max값 세팅
+			_aChart.options.scales.yAxes[0].ticks.max = Math.floor((Math.max.apply(null, arrData) + 9)/10)*10;
+			
+			for(var i in arrChartUniqItvwDate) {
+				var temp = [];
+				for(var i in arrChartUniqCdBizarea) {
+					temp.push(arrData.shift());
+				}
+				arrTemp.push(temp);
+			}
+			
+			// charjs label 세팅 (사업장)
+			if(!_aChart.data.datasets.length) {
+				for(var i in arrChartUniqCdBizarea) {
+					var colorName = colorNames[_aChartData.datasets.length % colorNames.length];
+					var dsColor = chartColors[colorName];
+					
+					var newDataset = {};
+					
+					newDataset.label = arrChartUniqCdBizarea[i];
+					newDataset.backgroundColor = color(dsColor).alpha(0.5).rgbString();
+					newDataset.borderColor = dsColor;
+					newDataset.borderWidth = 1;
+					newDataset.data = [];
+					
+					_aChartData.datasets.push(newDataset);
+				}
+			}
+			
+			// (일자정보) x축 데이터를 생성한다.
+			for(var i in arrChartUniqItvwDate) {
+				_aChartData.labels.push(__toDateFormat(arrChartUniqItvwDate[i].right(4), "/"));
+			}
+			
+			var arrChartUniqItvwDateCnt = arrChartUniqItvwDate.length;
+			// 데이터를 사업장과 날짜에 맞게 재 배치 한다. (DB에서 가져올때는 날짜와 사업장 순인데 배치할 때는 날짜마다 사업장으로 배분 해줘야 한다.)
+			for (var i in arrChartUniqCdBizarea) {
+				for(var j=0;j<arrChartUniqItvwDateCnt;j++) {
+					var data =  arrTemp[j].shift();
+					_aChartData.datasets[i].data.push(data);
+				}
+			}
+			_aChart.update();
+			
 		}
 	};
 	__serviceCall(CMM_ACTION, postData, true, cbf, "", "tblStatItvwWeeklyReport");
@@ -509,11 +686,11 @@ function selectList3() {
 					tbodyTr.appendChild(td);
 				}
 				tbodyTr.childNodes.item(0).appendChild(document.createTextNode(rs[i].nmBizarea));
-				tbodyTr.childNodes.item(0).setAttribute("title", rs[i].nmBizarea);
+//				tbodyTr.childNodes.item(0).setAttribute("title", rs[i].nmBizarea);
 				tbodyTr.childNodes.item(0).setAttribute("class", "td-ellipsis");
 				tbodyTr.childNodes.item(0).setAttribute("style", "text-align:left;");
 				tbodyTr.childNodes.item(1).appendChild(document.createTextNode(rs[i].nmDept+"\u00A0\u00A0\u00A0"+__textPaste(rs[i].deptClass, "기")));
-				tbodyTr.childNodes.item(1).setAttribute("title", rs[i].nmDept);
+//				tbodyTr.childNodes.item(1).setAttribute("title", rs[i].nmDept);
 				tbodyTr.childNodes.item(1).setAttribute("class", "td-ellipsis");
 				tbodyTr.childNodes.item(1).setAttribute("style", "text-align:left;font-weight:normal;");
 				tbodyTr.childNodes.item(2).appendChild(document.createTextNode(__toDateFormat(rs[i].eduSdate)));

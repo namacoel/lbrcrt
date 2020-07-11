@@ -970,7 +970,7 @@ function __toDateFormat(str, dmt) {
 		str = str.replace(/([0-9]{4})([0-9]{2})/, "$1"+dmt+"$2");
 	} else if(str.length == 4) {
 //		str = str.replace(/([0-9]{4})/, "$1"+dmt+"XX"+dmt+"XX");
-		str = str.replace(/([0-9]{4})/, "$1");
+		str = str.replace(/([0-9]{2})([0-9]{2})/, "$1"+dmt+"$2");
 	}
 	return str;
 }

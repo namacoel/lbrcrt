@@ -6,10 +6,10 @@
 <!-- 공통 LIB  설정 : ST -->
 <%@include file="/WEB-INF/views/include/import.jsp"%>
 <%@include file="/WEB-INF/views/include/importBootstrap.jsp"%>
-<script src="<%=request.getContextPath()%>/resources/plugins/jQuery/xlsx.full.min.js"></script>
+<script src="<%=request.getContextPath()%>/resources/plugins/chartjs/Chart.min.js"></script>
 
 
-<script type="text/javascript" src="<%=request.getContextPath()%>/resources/js/test/testExcelUpload.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/resources/js/test/testChartjs.js"></script>
 <!-- 공통 LIB  설정 : ED -->
 <style>
 /* body {margin: 10px} */
@@ -66,13 +66,13 @@
 
 </style>
 
-<title>테스트 화면</title>
+<title>Sample Chart</title>
 </head>
 <body>
 
 <div class="content-wrapper content-custom">
     <section class="content-header">
-        <h1>테스트 엑셀 업로드<small style="color:red">데이터를 확인 해주세요.</small></h1>
+        <h1>Sample Chart<small style="color:red">데이터를 확인 해주세요.</small></h1>
     </section>
     <section class="content" style="padding-bottom:0px">
         <div class="row">
@@ -80,29 +80,30 @@
                 <div class="box box-primary">
                     <div class="box-header with-border">
                         <div class="input-group">
-                            <div class="filebox bs3-primary">
-                            
-                           	<!-- 참고 form태그 사용안하고 file타입을 forData에 직접 넣을 수도 있음  -->
-                           	<!-- formData.append("uploadfile",$("input[name=uploadfile]")[0].files[0]); -->
-                            <form name="formUpload" id="formUpload">
-                         		<input id="uploadName" class="upload-name" value="" disabled="disabled">
-                            	<!-- 중요!! file 엘리먼트에 name 안 써주면 formdata에서 확인이 안된다. -->
-                                <input type="file" id="excelFile" name="excelFile" class="upload-hidden">      
-                                <div class="btn-group">
-                                	<button class="btn btn-danger" id="btnFileUpload">파일선택</button>
-                                </div>
-                            </form>
-
-                            </div>
+                            <table class="table-search table-fill">
+								<tr>
+									<th style="min-width:120px">조회일자</th>
+									<td><input type="date" id="srchDate"></td>
+								</tr>
+							</table>
+							<span id="div_btnDay" class="input-group-btn">
+								<button class="btn btn-default btn-sm" id="btnPrevDay" title="이전"><i class="fa fa-caret-left"></i></button>
+								<button class="btn btn-default btn-sm" id="btnNextDay" title="다음"><i class="fa fa-caret-right"></i></button>
+							</span>
                         </div>
                     </div>
                     <div class="box-body">
-                        <div class="box-header" style="padding:0px;">
-                            <span class="btn btn-block btn-primary btn-sm">업로드 대상 목록<span id="totalCount1"></span></span>
+                        <div class="box-header" style="padding:0px;margin-bottom:20px;">
+                            <span class="btn btn-block btn-primary btn-sm">업로드 대상자 차트<span id="totalCount1"></span></span>
                         </div>
-                        <div id="div_gridList1">
-                            <table id="gridList1" class="display compact row-border" style="width:100%"></table>
-                        </div>
+						<div class="container" style="width: 70%;">
+							<canvas id="barChart"></canvas>
+						</div>
+						<button id="btnRandomizeData">Randomize Data</button>
+						<button id="btnAddDataset">Add Dataset</button>
+						<button id="btnRemoveDataset">Remove Dataset</button>
+						<button id="btnAddData">Add Data</button>
+						<button id="btnRemoveData">Remove Data</button>
                     </div>
                 </div>
             </div>
@@ -110,6 +111,7 @@
         
     </section>
 </div>
+
 
 </body>
 </html>

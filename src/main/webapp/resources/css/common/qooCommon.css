@@ -191,7 +191,7 @@ table.table-common textarea {
 /* 	height: 100%; */ /* 값 조절 버튼 크기 */
 }
 .table-fill input[type="date"]::-webkit-calendar-picker-indicator, input[type="month"]::-webkit-calendar-picker-indicator {
-	font-size: 27px /* 우측 역삼각형 크기 */
+/* 	font-size: 27px 우측 역삼각형 크기 */
 }
 
 .table-fill input[type=number]::-webkit-inner-spin-button {
