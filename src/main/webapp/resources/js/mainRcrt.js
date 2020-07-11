@@ -8,18 +8,18 @@
  * 2017.09.05	김상우			리팩토링
  * ************************************************/
 
-/**************************************************
+/*******************************************************************************
  * 화면 초기화를 위한 객체 설정
- **************************************************/
+ ******************************************************************************/
 var _pObj = {
-	bizareaMap : new nMap(),	// 부서코드북 보관
-	initDropDown:function() {
+	bizareaMap : new nMap(), // 부서코드북 보관
+	initDropDown : function() {
 		var bizareaList = __appCmm.getBizareaCodeBook();
-		for(var i in bizareaList) {
+		for ( var i in bizareaList) {
 			this.bizareaMap.put(bizareaList[i].code, bizareaList[i].codeNm);
 		}
-	}
-}
+	},
+};
 
 /* chartjs 그래프 색세팅 */
 var chartColors = {
@@ -38,7 +38,7 @@ var _aChart = "";
 var _aChartData = {};
 
 Chart.Legend.prototype.afterFit = function() {
-    this.height = this.height + 10;
+	this.height = this.height + 10;
 };
 
 /**************************************************
@@ -46,69 +46,76 @@ Chart.Legend.prototype.afterFit = function() {
  **************************************************/
 $(document).ready(function() {
 	_pObj.initDropDown();
-	
 	var chartInfo = {
 			type : "bar",
 			data : _aChartData,
 			options : {
-				maintainAspectRatio: false,
+				maintainAspectRatio : false,
 				responsive : true,
 				legend : {
 					position : "top",
-					labels: {
-//						fontSize: 10
-					}
+					labels : {
+						// fontSize: 10
+						},
+					},
+					title : {
+						display : false,
+						text : "차트",
+					},
+					scales : {
+						xAxes : [{
+							ticks : {
+								// fontSize: 10
+							},
+						}, ],
+						yAxes : [{
+							ticks : {
+								beginAtZero : true,
+								max : 10, // 데이터 조회시 갱신되게 로직 추가한다.
+								stepSize : 10, // y축 간격 크기
+							},
+						}, ],
+					},
+					events : [], // 마우스 이벤트 설정; []이면 아무것도 실행하지 않는다.
+					animation : {
+						onComplete : function(animation) {
+							// 그래프가 그려지면 값이 표시되도록 한다.
+							var ctx = this.chart.ctx;
+							ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontFamily, "normal", Chart.defaults.global.defaultFontFamily);
+							ctx.fillStyle = "gray";
+							ctx.textAlign = "center";
+							ctx.textBaseline = "bottom";
+							// ctx.width = '600px';
+							// ctx.height = '200px';
+							
+							this.data.datasets.forEach(function(dataset) {
+								for (var i = 0; i < dataset.data.length; i++) {
+									for ( var key in dataset._meta) {
+										var model = dataset._meta[key].data[i]._model;
+										ctx
+												.fillText(
+														dataset.data[i],
+														model.x,
+														model.y - 5);
+									}
+								}
+							});
+						},
+					},
 				},
-				title : {
-					display : false,
-					text : "차트",
-				},
-				scales: {
-					xAxes: [{
-						ticks: {
-//							fontSize: 10
-						}
-					}],
-					yAxes: [{
-						ticks: {
-							beginAtZero:true,
-							max: 10, // 데이터 조회시 갱신되게 로직 추가한다.
-							stepSize: 10, // y축 간격 크기
-						}
-					}]
-				},
-				events: [], // 마우스 이벤트 설정; []이면 아무것도 실행하지 않는다.
-				animation: {
-					onComplete: function(animation) {
-						// 그래프가 그려지면 값이 표시되도록 한다.
-				        var ctx = this.chart.ctx;
-				        ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontFamily, 'normal', Chart.defaults.global.defaultFontFamily);
-				        ctx.fillStyle = 'gray';
-				        ctx.textAlign = 'center';
-				        ctx.textBaseline = 'bottom';
-//				        ctx.width = '600px';
-//				        ctx.height = '200px';
-
-				        this.data.datasets.forEach(function (dataset) {
-				        	for (var i = 0; i < dataset.data.length; i++) {
-				                for(var key in dataset._meta) {
-				                    var model = dataset._meta[key].data[i]._model;
-				                    ctx.fillText(dataset.data[i], model.x, model.y - 5);
-				                }
-				            }
-				        });
-					}
-				}
-			},
 	};
-	
+
 	var ctx = document.getElementById("aChart");
 	_aChart = new Chart(ctx, chartInfo);
 	
 	$("#modalWrapper").draggable({}); // 드래그 가능 설정
-		
-	$("#srchDate").val(__toDateFormat(__getDate().left(8),"-"));
+	$("#srchDate").val(__toDateFormat(__getDate().left(8), "-"));
 	$("#srchDate").trigger("change");
+
+	setTimeout(function() {
+		$("#btnModal").trigger("click");
+	}, 700);
+
 });
 
 /**************************************************
@@ -116,64 +123,64 @@ $(document).ready(function() {
  **************************************************/
 /** 조회날짜 change 이벤트 */
 $(document).on("change", " #srchDate", function() {
-//	selectList1(); // 사용안함 2020.07.09
+	// selectList1(); // 사용안함 2020.07.09
 	selectList2();
 	selectList3();
 });
 /** 전날/다음날 click 이벤트 */
 $(document).on("click", "#div_btnDay > button", function() {
 	var elementId = $(this).attr("id");
-	
+
 	submitCheck();
 	var srchDate = new Date($("#srchDate").val());
-	
+
 	switch (elementId) {
-	case "btnPrevDay":	// 전날 클릭
-		srchDate.setDate(srchDate.getDate()-7);
+	case "btnPrevDay": // 전날 클릭
+		srchDate.setDate(srchDate.getDate() - 7);
 		break;
-	case "btnNextDay":	// 다음날 클릭
-		srchDate.setDate(srchDate.getDate()+7); 
+	case "btnNextDay": // 다음날 클릭
+		srchDate.setDate(srchDate.getDate() + 7);
 		break;
 	default:
 		break;
 	}
-	$("#srchDate").val(__toDateFormat(__getDate(srchDate).left(8),"-"));
+	$("#srchDate").val(__toDateFormat(__getDate(srchDate).left(8), "-"));
 	$("#srchDate").trigger("change");
 });
 
 $(document).on("mouseover", "#tblStatItvwWeeklyReport tr td", function() {
 	var idx = $(this).index();
 	var trIdx = $(this).parent().last().index();
-	
-	if(trIdx!=4 && idx>0 && idx<16 && $(this).text()>0) {
+
+	if (trIdx != 4 && idx > 0 && idx < 16 && $(this).text() > 0) {
 		$(this).css("background-color", "#d2d6de");
-		$(this).css("cursor","pointer");	
+		$(this).css("cursor", "pointer");
 	}
 });
 
 $(document).on("mouseout", "#tblStatItvwWeeklyReport tr td", function() {
 	var idx = $(this).index();
 	var trIdx = $(this).parent().last().index();
-	
-	if(trIdx!=4 && idx>0 && idx<16 && $(this).text()>0) {
+
+	if (trIdx != 4 && idx > 0 && idx < 16 && $(this).text() > 0) {
 		$(this).css("background-color", "#fff");
-		$(this).css("cursor","auto");
+		$(this).css("cursor", "auto");
 	}
 });
 
 $(document).on("mouseover", "#tblStatRcrtReport tr td", function() {
 	var idx = $(this).index();
-	if(idx > 3 && idx <8 && $(this).text()>0) {
+	if (idx > 3 && idx < 8 && $(this).text() > 0) {
 		$(this).css("background-color", "#d2d6de");
-		$(this).css("cursor","pointer");	
+		$(this).css("cursor", "pointer");
 	}
 });
 
 $(document).on("mouseout", "#tblStatRcrtReport tr td", function() {
 	var idx = $(this).index();
-	if(idx > 3 && idx <8 && $(this).text()>0) {
+	if (idx > 3 && idx < 8 && $(this).text() > 0) {
 		$(this).css("background-color", "#fff");
-		$(this).css("cursor","auto");
+		$(this).css("cursor", "auto");
 	}
 });
 
@@ -181,16 +188,17 @@ $(document).on("mouseout", "#tblStatRcrtReport tr td", function() {
 $(document).on("click", "#tblStatItvwWeeklyReport tr td", function() {
 	var idx = $(this).index();
 	var trIdx = $(this).parent().last().index();
-	
-	if(trIdx== 4 || idx<=0 || idx>=16 || $(this).text()<=0) return;
-	
-	var idxName = $("#tblStatItvwWeeklyReport tr:eq(1) th:eq("+(idx-1)+")").text();
+
+	if (trIdx == 4 || idx <= 0 || idx >= 16 || $(this).text() <= 0)
+		return;
+
+	var idxName = $("#tblStatItvwWeeklyReport tr:eq(1) th:eq(" + (idx - 1) + ")").text();
 	var resultTitle = "&resultTitle=" + $(this).parent().children("th:eq(0)").text() + " 면접" + idxName;
 	var flag = "";
 	var cdCompany = "&cdCompany=" + $(this).parent().attr("data-cdcompany");
 	var cdBizarea = "&cdBizarea=" + $(this).parent().attr("data-cdbizarea");
-	var itvwDate = "&itvwDate=" + $("#tblStatItvwWeeklyReport tr:eq(0) th:eq("+ Math.ceil(idx/3)+")").attr("data-itvwdate"); 
-	
+	var itvwDate = "&itvwDate=" + $("#tblStatItvwWeeklyReport tr:eq(0) th:eq(" + Math.ceil(idx / 3) + ")").attr("data-itvwdate");
+
 	switch (idxName) {
 	case "대상": // 면접대상
 		flag = "ITVW_WATING";
@@ -205,22 +213,22 @@ $(document).on("click", "#tblStatItvwWeeklyReport tr td", function() {
 		return;
 	}
 	console.log("idxName : " + idxName + " / " + "flag : " + flag);
-	window.open("employment/statRcrtStatusPop?flag="+flag+cdCompany+cdBizarea+itvwDate+resultTitle
-			, "statRcrtStatusPop", "left=0, top=50, width=1880, height=650");
+	window.open("employment/statRcrtStatusPop?flag=" + flag + cdCompany + cdBizarea + itvwDate + resultTitle, "statRcrtStatusPop", "left=0, top=50, width=1880, height=650");
 });
+
 /** 채용진행현황 지원자~면접합격자 컬럼 클릭 */
 $(document).on("click", "#tblStatRcrtReport tr td", function() {
-	if($(this).text()<1) return;
+	if ($(this).text() < 1)
+		return;
+
 	var idx = $(this).index();
-	var resultTitle = "&resultTitle=" + $(this).parent().children("th:eq(0)").text()
-			+ " " + $(this).parent().children("th:eq(1)").text()
-			+ " " + $("#tblStatRcrtReport th:eq("+idx+")").text();
+	var resultTitle = "&resultTitle=" + $(this).parent().children("th:eq(0)").text() + " " + $(this).parent().children("th:eq(1)").text() + " " + $("#tblStatRcrtReport th:eq(" + idx + ")").text();
 	var flag = "";
 	var cdCompany = "&cdCompany=" + $(this).parent().attr("data-cdcompany");
 	var cdBizarea = "&cdBizarea=" + $(this).parent().attr("data-cdbizarea");
 	var cdDept = "&cdDept=" + $(this).parent().attr("data-cddept");
 	var deptClass = "&deptClass=" + $(this).parent().attr("data-deptclass");
-	
+
 	switch (idx) {
 	case 4: // 지원자
 		flag = "APLCNT";
@@ -237,15 +245,7 @@ $(document).on("click", "#tblStatRcrtReport tr td", function() {
 	default:
 		return;
 	}
-	window.open("employment/statRcrtStatusPop?flag="+flag+cdCompany+cdBizarea+cdDept+deptClass+resultTitle
-			, "statRcrtStatusPop", "left=0, top=50, width=1880, height=650");
-});
-
-$(document).on("mouseover", "#btnModal", function() {
-	$("#btnModal .fa-bar-chart").attr("style", "font-size:16px;transition: all 0.25s");
-});
-$(document).on("mouseout", "#btnModal", function() {
-	$("#btnModal .fa-bar-chart").attr("style", "font-size:14px;transition: all 0.25s");
+	window.open("employment/statRcrtStatusPop?flag=" + flag + cdCompany + cdBizarea + cdDept + deptClass + resultTitle, "statRcrtStatusPop", "left=0, top=50, width=1880, height=650");
 });
 
 /**************************************************
@@ -254,13 +254,13 @@ $(document).on("mouseout", "#btnModal", function() {
 /** 연속 클릭 딜레이 주는 함수 */
 function submitCheck() {
 	$("#btnPrevDay, #btnNextDay").attr("disabled", true);
-	setTimeout(function(){
+	setTimeout(function() {
 		$("#btnPrevDay, #btnNextDay").attr("disabled", false);
 	}, 1500);
 }
 
-$(document).on("click", "#btnModal", function() {
-	if($("#modalWrapper").css("display") == "none") {
+$(document).on("click", "#btnModal, #modalChart .close", function() {
+	if ($("#modalWrapper").css("display") == "none") {
 		$("#modalWrapper").fadeIn();
 	} else {
 		$("#modalWrapper").fadeOut();
@@ -270,15 +270,15 @@ $(document).on("click", "#btnModal", function() {
 /** 차트의 데이터셋을 삭제한다. */
 function removeAllDataset() {
 	var datasetCnt = _aChart.data.datasets.length;
-	
+
 	var labelsCnt = _aChartData.labels.length;
-	for (var i=0;i<labelsCnt;i++) {
+	for (var i = 0; i < labelsCnt; i++) {
 		_aChartData.labels.splice(-1, 1); // remove the label first
-		_aChartData.datasets.forEach(function (dataset) {
+		_aChartData.datasets.forEach(function(dataset) {
 			dataset.data.pop();
 		});
 	}
-	
+
 	_aChart.update();
 }
 
@@ -288,69 +288,70 @@ function removeAllDataset() {
 /** 리스트 조회 : 센터별 인원 운영 현황 */
 function selectList1() {
 	var srchDate = $("#srchDate").numVal().left(6);
-	
 	var postData = new nMap();
-	
+
 	postData.put("DB_CRUD", "R"); // DB 트랜잭션
 	postData.put("DB_MAPPER", "employmentStatMapper");
 	postData.put("DB_REQID", "selectStatEmployeeMonthReport");
-	
+
 	postData.put("srchDate", srchDate);
-	
+
 	var cbf = function(rs, elementId) {
 		var node = document.getElementById(elementId);
 		var thead = document.createElement("thead");
 		var theadTr1 = document.createElement("tr");
 		var theadTr2 = document.createElement("tr");
 		var tbody = document.createElement("tbody");
-		
+
 		var today = __getDate().left(8);
-		
-		if(!node) return;
-		while(node.hasChildNodes()) { // node가 가진 자식 노드가 있으면 
+
+		if (!node)
+			return;
+		while (node.hasChildNodes()) {
+			// node가 가진 자식 노드가 있으면
 			node.removeChild(node.lastChild); // 마지막 자식노드를 삭제
 		}
-		
-		if(rs.length>0) {
-			var arrUniqCdBizarea = ["1000", "3000", "5000", "8000"];
-			
+
+		if (rs.length > 0) {
+			var arrUniqCdBizarea = [ "1000", "3000", "5000", "8000" ];
+
 			var th_a1 = document.createElement("th");
 			var th_a2 = document.createElement("th");
-			
+
 			th_a1.innerHTML = "구분";
 			th_a1.setAttribute("rowspan", "2");
-			
-			th_a2.innerHTML =srchDate.left(4)+"년 "+srchDate.substr(4,2)+"월 운영 현황";
+
+			th_a2.innerHTML = srchDate.left(4) + "년 " + srchDate.substr(4, 2) + "월 운영 현황";
 			th_a2.setAttribute("colspan", "7");
-			
+
 			theadTr1.appendChild(th_a1);
 			theadTr1.appendChild(th_a2);
-			
-			var thItem = ["TO","재직인원","이직","GAP","투입대기","운영비율","확보율"];
-			for(var j=0 in thItem) {
+
+			var thItem = [ "TO", "재직인원", "이직", "GAP", "투입대기", "운영비율", "확보율" ];
+			for ( var j = 0 in thItem) {
 				var th = document.createElement("th");
 				th.innerHTML = thItem[j];
 				theadTr2.appendChild(th);
 			}
-			
+
 			thead.appendChild(theadTr1);
 			thead.appendChild(theadTr2);
 			node.appendChild(thead);
-			
-			for(var i in arrUniqCdBizarea) {
+
+			for ( var i in arrUniqCdBizarea) {
 				var tbodyTr = document.createElement("tr");
 				var th = document.createElement("th");
-				
-				th.innerHTML = _pObj.bizareaMap.get(arrUniqCdBizarea[i]);;
+
+				th.innerHTML = _pObj.bizareaMap.get(arrUniqCdBizarea[i]);
 				tbodyTr.appendChild(th);
-				
-				for(var j=0; j<theadTr2.childElementCount;j++) {
+
+				for (var j = 0; j < theadTr2.childElementCount; j++) {
 					var td = document.createElement("td");
 					tbodyTr.appendChild(td);
 				}
-				
-				for(var j in rs) {
-					if(arrUniqCdBizarea[i] == rs[j].cdBizarea) {
+
+				for ( var j in rs) {
+					if (arrUniqCdBizarea[i] == rs[j].cdBizarea) {
 						tbodyTr.childNodes.item(1).appendChild(document.createTextNode(rs[j].monthToCnt));
 						tbodyTr.childNodes.item(2).appendChild(document.createTextNode(rs[j].endEmployeeCnt));
 						tbodyTr.childNodes.item(3).appendChild(document.createTextNode(rs[j].changeCnt));
@@ -371,15 +372,15 @@ function selectList1() {
 /** 리스트 조회 : 면접 주간 현황 */
 function selectList2() {
 	var srchDate = $("#srchDate").numVal();
-	
+
 	var postData = new nMap();
-	
+
 	postData.put("DB_CRUD", "R"); // DB 트랜잭션
 	postData.put("DB_MAPPER", "employmentStatMapper");
 	postData.put("DB_REQID", "selectStatItvwWeeklyReport");
-	
+
 	postData.put("srchDate", srchDate);
-	
+
 	var cbf = function(rs, elementId) {
 		var node = document.getElementById(elementId);
 		var thead = document.createElement("thead");
@@ -387,88 +388,102 @@ function selectList2() {
 		var theadTr2 = document.createElement("tr");
 		var tbody = document.createElement("tbody");
 		var today = __getDate().left(8);
-		
-		if(!node) return;
-		while(node.hasChildNodes()) { // node가 가진 자식 노드가 있으면 
+
+		if (!node)
+			return;
+		while (node.hasChildNodes()) {
+			// node가 가진 자식 노드가 있으면
 			node.removeChild(node.lastChild); // 마지막 자식노드를 삭제
 		}
-		
-		if(rs.length>0) {
-			
+
+		if (rs.length > 0) {
 			/* 차트 사용 변수 */
-			var arrChartUniqItvwDate = []; //날짜담기(5일치 중복제거)
-			var arrChartUniqCdBizarea = []; //사업장 가져오기(중복제거)
+			var arrChartUniqItvwDate = []; // 날짜담기(5일치 중복제거)
+			var arrChartUniqCdBizarea = []; // 사업장 가져오기(중복제거)
 			var arrData = []; // 리스트로 데이터 담기
 			var arrTemp = []; // 임시
-			
+
 			var arrItvwDate = [];
-//			var arrCdCompany = new Array;
-//			var arrCdBizarea = new Array;
-			
+			// var arrCdCompany = new Array;
+			// var arrCdBizarea = new Array;
+
 			// 해당 데이터의 날짜 정보를 중복없이 가져오기 위해서 사용함.
 			// 날짜를 가져오기 위해서 날짜만 가져오는 쿼리문을 사용할 수도 있고,
 			// JS단에서 처리할 수 도 있지만, 데이터 일관성을 위해서 이렇게 해둠.
-			for(var i in rs) {
+			for ( var i in rs) {
 				var tempItvwDate = rs[i].srchDate;
-//				var tempCdCompany = rs[i].cdCompany;
-//				var tempCdBizarea = rs[i].cdBizarea;
-				
-				if(!isNull(tempItvwDate)) arrItvwDate.push(tempItvwDate);
-//				if(!isNull(tempCdCompany)) arrCdCompany.push(tempCdCompany);
-//				if(!isNull(tempCdBizarea)) arrCdBizarea.push(tempCdBizarea);
-				
+				// var tempCdCompany = rs[i].cdCompany;
+				// var tempCdBizarea = rs[i].cdBizarea;
+
+				if (!isNull(tempItvwDate))
+					arrItvwDate.push(tempItvwDate);
+				// if(!isNull(tempCdCompany)) arrCdCompany.push(tempCdCompany);
+				// if(!isNull(tempCdBizarea)) arrCdBizarea.push(tempCdBizarea);
+
 				/* 차트 값 세팅 */
-				arrChartUniqItvwDate.includes(rs[i].srchDate) ||  arrChartUniqItvwDate.push(rs[i].srchDate);
+				arrChartUniqItvwDate.includes(rs[i].srchDate) || arrChartUniqItvwDate.push(rs[i].srchDate);
 				// 회사구분은 처리 안했으니 참고...(현재는 무조건 1000임)
-				arrChartUniqCdBizarea.includes(rs[i].nmBizarea) ||  arrChartUniqCdBizarea.push(rs[i].nmBizarea);
+				arrChartUniqCdBizarea.includes(rs[i].nmBizarea) || arrChartUniqCdBizarea.push(rs[i].nmBizarea);
 				arrData.push(rs[i].itvwWatingCnt);
-				
 			}
-			
-			var arrUniqItvwDate = arrItvwDate.slice().sort(function(a,b){return a - b}).reduce(function(a,b){if (a.slice(-1)[0] !== b) a.push(b);return a;},[]);
-//			var arrUniqCdCompany = arrCdCompany.slice().sort(function(a,b){return a - b}).reduce(function(a,b){if (a.slice(-1)[0] !== b) a.push(b);return a;},[]);
-//			var arrUniqCdBizarea = arrCdBizarea.slice().sort(function(a,b){return a - b}).reduce(function(a,b){if (a.slice(-1)[0] !== b) a.push(b);return a;},[]);
-			var arrUniqCdBizarea = ["1000", "3000", "5000", "8000"];
-			
+
+			var arrUniqItvwDate = arrItvwDate.slice().sort(function(a, b) {
+				return a - b;
+			}).reduce(function(a, b) {
+				if (a.slice(-1)[0] !== b)
+					a.push(b);
+				return a;
+			}, []);
+			// var arrUniqCdCompany =
+			// arrCdCompany.slice().sort(function(a,b){return a -
+			// b}).reduce(function(a,b){if (a.slice(-1)[0] !== b)
+			// a.push(b);return a;},[]);
+			// var arrUniqCdBizarea =
+			// arrCdBizarea.slice().sort(function(a,b){return a -
+			// b}).reduce(function(a,b){if (a.slice(-1)[0] !== b)
+			// a.push(b);return a;},[]);
+			var arrUniqCdBizarea = [ "1000", "3000", "5000", "8000" ];
+
 			var th_a1 = document.createElement("th");
 			th_a1.innerHTML = "구분";
 			th_a1.setAttribute("rowspan", "2");
 			theadTr1.appendChild(th_a1);
 			arrUniqItvwDate.push("센터 합계");
 			arrUniqCdBizarea.push("일 합계");
-			
-			for(var i=0 in arrUniqItvwDate) {
+
+			for ( var i = 0 in arrUniqItvwDate) {
 				// DB에서 요일 정보를 가져오기가 난해해서 JS에서 처리해준다.
-				var arrDayWeek = ['일', '월', '화', '수', '목', '금', '토'];
+				var arrDayWeek = [ "일", "월", "화", "수", "목", "금", "토" ];
 				var idx = new Date(__toDateFormat(arrUniqItvwDate[i], "-")).getDay();
 				var th = document.createElement("th");
-				
+
 				th.setAttribute("colspan", "3");
 				th.setAttribute("data-itvwdate", arrUniqItvwDate[i]);
 
-				if(idx==0) {
+				if (idx == 0) {
 					th.setAttribute("class", "th-color-holiday");
-				} else if(idx==6) {
+				} else if (idx == 6) {
 					th.setAttribute("class", "th-color-saturday");
 				}
-				
-				if(arrUniqItvwDate[i] == today) th.setAttribute("class", "th-bgcolor-today");
-				
-				if(arrUniqItvwDate[i] == "센터 합계") {
+
+				if (arrUniqItvwDate[i] == today)
+					th.setAttribute("class", "th-bgcolor-today");
+
+				if (arrUniqItvwDate[i] == "센터 합계") {
 					th.innerHTML = arrUniqItvwDate[i];
 					th.setAttribute("class", "color-sum");
 				} else {
-					th.innerHTML = __toDateFormat(arrUniqItvwDate[i], "/").right(5)+" ("+arrDayWeek[idx]+")";
+					th.innerHTML = __toDateFormat(arrUniqItvwDate[i], "/").right(5) + " (" + arrDayWeek[idx] + ")";
 				}
 				theadTr1.appendChild(th);
 			}
-			
-			for(var i=0 in arrUniqItvwDate) {
-				var thItem = ["대상","참석","합격"];
-				for(var j=0 in thItem) {
+
+			for ( var i = 0 in arrUniqItvwDate) {
+				var thItem = [ "대상", "참석", "합격" ];
+				for ( var j = 0 in thItem) {
 					var th = document.createElement("th");
 					th.innerHTML = thItem[j];
-					if(arrUniqItvwDate[i] == today) {
+					if (arrUniqItvwDate[i] == today) {
 						th.setAttribute("class", "th-bgcolor-today");
 					} else if (arrUniqItvwDate[i] == "센터 합계") {
 						th.setAttribute("class", "color-sum");
@@ -479,43 +494,46 @@ function selectList2() {
 			thead.appendChild(theadTr1);
 			thead.appendChild(theadTr2);
 			node.appendChild(thead);
-			
+
 			var arrSumDay = new Array(5);
-			for(var x=0;x<5;x++) {
+			for (var x = 0; x < 5; x++) {
 				arrSumDay[x] = new Array(3);
-				for(var y=0;y<3;y++) {
+				for (var y = 0; y < 3; y++) {
 					arrSumDay[x][y] = 0;
 				}
 			}
-			
-			for(var i in arrUniqCdBizarea) {
+
+			for ( var i in arrUniqCdBizarea) {
 				var tbodyTr = document.createElement("tr");
 				var th = document.createElement("th");
-				
+
 				var sumItvwWatingCnt = 0;
 				var sumItvwAttdCnt = 0;
 				var sumPickedCnt = 0;
-				
-				if(arrUniqCdBizarea[i] == "일 합계") {
+
+				if (arrUniqCdBizarea[i] == "일 합계") {
 					th.innerHTML = arrUniqCdBizarea[i];
 					th.setAttribute("class", "color-sum");
 				} else {
-					th.innerHTML = _pObj.bizareaMap.get(arrUniqCdBizarea[i]);;
+					th.innerHTML = _pObj.bizareaMap.get(arrUniqCdBizarea[i]);
 					th.setAttribute("class", "th-align-left");
 				}
 				tbodyTr.appendChild(th);
-				
-				for(var j=0; j<theadTr2.childElementCount;j++) {
+
+				for (var j = 0; j < theadTr2.childElementCount; j++) {
 					var td = document.createElement("td");
-					if(arrUniqCdBizarea[i] == "일 합계") td.setAttribute("class", "color-sum");
+					if (arrUniqCdBizarea[i] == "일 합계")
+						td.setAttribute("class", "color-sum");
 					tbodyTr.appendChild(td);
 				}
-				
-				for(var j in rs) {
-					if(arrUniqCdBizarea[i] == rs[j].cdBizarea) {
-						if(isNull(tbodyTr.getAttribute("data-cdcompany"))) tbodyTr.setAttribute("data-cdcompany", rs[j].cdCompany);
-						if(isNull(tbodyTr.getAttribute("data-cdbizarea"))) tbodyTr.setAttribute("data-cdbizarea", rs[j].cdBizarea);
-						
+
+				for ( var j in rs) {
+					if (arrUniqCdBizarea[i] == rs[j].cdBizarea) {
+						if (isNull(tbodyTr.getAttribute("data-cdcompany")))
+							tbodyTr.setAttribute("data-cdcompany", rs[j].cdCompany);
+						if (isNull(tbodyTr.getAttribute("data-cdbizarea")))
+							tbodyTr.setAttribute("data-cdbizarea", rs[j].cdBizarea);
+
 						if (rs[j].srchDate == arrUniqItvwDate[0]) {
 							tbodyTr.childNodes.item(1).appendChild(document.createTextNode(rs[j].itvwWatingCnt));
 							tbodyTr.childNodes.item(2).appendChild(document.createTextNode(rs[j].itvwAttdCnt));
@@ -563,11 +581,11 @@ function selectList2() {
 				tbodyTr.childNodes.item(17).setAttribute("class", "color-sum");
 				tbodyTr.childNodes.item(18).appendChild(document.createTextNode(nullToEmpty(Number(sumPickedCnt))));
 				tbodyTr.childNodes.item(18).setAttribute("class", "color-sum");
-				
-				if(arrUniqCdBizarea[i] == "일 합계") {
-					var z=0;
-					for(var x=0;x<5;x++) {
-						for(var y=0;y<3;y++) {
+
+				if (arrUniqCdBizarea[i] == "일 합계") {
+					var z = 0;
+					for (var x = 0; x < 5; x++) {
+						for (var y = 0; y < 3; y++) {
 							tbodyTr.childNodes.item(++z).appendChild(document.createTextNode(nullToEmpty(Number(arrSumDay[x][y]))));
 						}
 					}
@@ -578,90 +596,90 @@ function selectList2() {
 				tbody.appendChild(tbodyTr);
 			}
 			node.appendChild(tbody);
-			
-			
 
-			/* 차트 그리기 시작 (변수는 위에 선언 한다. rs 반복문 중복을 막으려고) */			
+			/* 차트 그리기 시작 (변수는 위에 선언 한다. rs 반복문 중복을 막으려고) */
+
 			removeAllDataset();
 
 			// y축 max값 세팅
-			_aChart.options.scales.yAxes[0].ticks.max = Math.floor((Math.max.apply(null, arrData) + 9)/10)*10;
-			
-			for(var i in arrChartUniqItvwDate) {
+			_aChart.options.scales.yAxes[0].ticks.max = Math.floor((Math.max.apply(null, arrData) + 9) / 10) * 10;
+
+			for ( var i in arrChartUniqItvwDate) {
 				var temp = [];
-				for(var i in arrChartUniqCdBizarea) {
+				for ( var i in arrChartUniqCdBizarea) {
 					temp.push(arrData.shift());
 				}
 				arrTemp.push(temp);
 			}
-			
+
 			// charjs label 세팅 (사업장)
-			if(!_aChart.data.datasets.length) {
-				for(var i in arrChartUniqCdBizarea) {
+			if (!_aChart.data.datasets.length) {
+				for ( var i in arrChartUniqCdBizarea) {
 					var colorName = colorNames[_aChartData.datasets.length % colorNames.length];
 					var dsColor = chartColors[colorName];
-					
+
 					var newDataset = {};
-					
+
 					newDataset.label = arrChartUniqCdBizarea[i];
 					newDataset.backgroundColor = color(dsColor).alpha(0.5).rgbString();
 					newDataset.borderColor = dsColor;
 					newDataset.borderWidth = 1;
 					newDataset.data = [];
-					
+
 					_aChartData.datasets.push(newDataset);
 				}
 			}
-			
+
 			// (일자정보) x축 데이터를 생성한다.
-			for(var i in arrChartUniqItvwDate) {
-				_aChartData.labels.push(__toDateFormat(arrChartUniqItvwDate[i].right(4), "/"));
+			for ( var i in arrChartUniqItvwDate) {
+				_aChartData.labels.push(__toDateFormat(arrChartUniqItvwDate[i].right(4), "."));
 			}
-			
+
 			var arrChartUniqItvwDateCnt = arrChartUniqItvwDate.length;
-			// 데이터를 사업장과 날짜에 맞게 재 배치 한다. (DB에서 가져올때는 날짜와 사업장 순인데 배치할 때는 날짜마다 사업장으로 배분 해줘야 한다.)
-			for (var i in arrChartUniqCdBizarea) {
-				for(var j=0;j<arrChartUniqItvwDateCnt;j++) {
-					var data =  arrTemp[j].shift();
+			// 데이터를 사업장과 날짜에 맞게 재 배치 한다. (DB에서 가져올때는 날짜와 사업장 순인데 배치할 때는 날짜마다
+			// 사업장으로 배분 해줘야 한다.)
+			for ( var i in arrChartUniqCdBizarea) {
+				for (var j = 0; j < arrChartUniqItvwDateCnt; j++) {
+					var data = arrTemp[j].shift();
 					_aChartData.datasets[i].data.push(data);
 				}
 			}
 			_aChart.update();
-			
 		}
 	};
 	__serviceCall(CMM_ACTION, postData, true, cbf, "", "tblStatItvwWeeklyReport");
-	
 }
 /** 리스트 조회 : 채용 진행 현황 */
 function selectList3() {
 	var srchDate = $("#srchDate").numVal();
-	
+
 	var postData = new nMap();
-	
+
 	postData.put("DB_CRUD", "R"); // DB 트랜잭션
 	postData.put("DB_MAPPER", "employmentStatMapper");
 	postData.put("DB_REQID", "selectStatRcrtReport");
-	
+
 	postData.put("srchDate", srchDate);
-	
+
 	var cbf = function(rs, elementId) {
-		var colWidth = ["100","100","50","50","50","50","50","50","70","120"];
-		var header = ["사업장", "부서", "교육시작일", "요청인원", "지원자", "면접대상", "면접참석", "면접합격","진행상태","채용기간"];
+		var colWidth = [ "100", "100", "50", "50", "50", "50", "50", "50", "70", "120" ];
+		var header = [ "사업장", "부서", "교육시작일", "요청인원", "지원자", "면접대상", "면접참석", "면접합격", "진행상태", "채용기간" ];
 		var thead = document.createElement("thead");
 		var tbody = document.createElement("tbody");
 		var theadTr = document.createElement("tr");
 		var node = document.getElementById(elementId);
-		
-		if(!node) return;
-		
-		while(node.hasChildNodes()) { // node가 가진 자식 노드가 있으면 
+
+		if (!node)
+			return;
+
+		while (node.hasChildNodes()) {
+			// node가 가진 자식 노드가 있으면
 			node.removeChild(node.lastChild); // 마지막 자식노드를 삭제
 		}
-		
-		$("#totalCount").html(" ("+rs.length+"건)");
-		
-		for(var i=0 in header) {
+
+		$("#totalCount").html(" (" + rs.length + "건)");
+
+		for ( var i = 0 in header) {
 			var th = document.createElement("th");
 			th.innerHTML = header[i];
 			th.setAttribute("style", "width: " + colWidth[i] + "px;");
@@ -669,19 +687,19 @@ function selectList3() {
 		}
 		thead.appendChild(theadTr);
 		node.appendChild(thead);
-		
-		if(rs.length>0) {
-			for(var i in rs) {
+
+		if (rs.length > 0) {
+			for ( var i in rs) {
 				var tbodyTr = document.createElement("tr");
 				tbodyTr.setAttribute("data-cdcompany", rs[i].cdCompany);
 				tbodyTr.setAttribute("data-cdbizarea", rs[i].cdBizarea);
 				tbodyTr.setAttribute("data-cddept", rs[i].cdDept);
 				tbodyTr.setAttribute("data-deptclass", rs[i].deptClass);
-				for(var j=0;j<2;j++) {
+				for (var j = 0; j < 2; j++) {
 					var th = document.createElement("th");
 					tbodyTr.appendChild(th);
 				}
-				for(var j=0;j<header.length-2;j++) {
+				for (var j = 0; j < header.length - 2; j++) {
 					var td = document.createElement("td");
 					tbodyTr.appendChild(td);
 				}
@@ -689,7 +707,7 @@ function selectList3() {
 //				tbodyTr.childNodes.item(0).setAttribute("title", rs[i].nmBizarea);
 				tbodyTr.childNodes.item(0).setAttribute("class", "td-ellipsis");
 				tbodyTr.childNodes.item(0).setAttribute("style", "text-align:left;");
-				tbodyTr.childNodes.item(1).appendChild(document.createTextNode(rs[i].nmDept+"\u00A0\u00A0\u00A0"+__textPaste(rs[i].deptClass, "기")));
+				tbodyTr.childNodes.item(1).appendChild(document.createTextNode(rs[i].nmDept + "\u00A0\u00A0\u00A0" + __textPaste(rs[i].deptClass, "기")));
 //				tbodyTr.childNodes.item(1).setAttribute("title", rs[i].nmDept);
 				tbodyTr.childNodes.item(1).setAttribute("class", "td-ellipsis");
 				tbodyTr.childNodes.item(1).setAttribute("style", "text-align:left;font-weight:normal;");
@@ -701,22 +719,25 @@ function selectList3() {
 				tbodyTr.childNodes.item(6).appendChild(document.createTextNode(rs[i].itvwAttdCnt));
 				tbodyTr.childNodes.item(7).appendChild(document.createTextNode(rs[i].pickedCnt));
 				var itemRcProgCd = document.createElement("span");
-				if(rs[i].rcProgCd == "1") { // 완료
+				if (rs[i].rcProgCd == "1") {
+					// 완료
 					itemRcProgCd.classList.add("label", "label-success");
-				} else if(rs[i].rcProgCd == "2") { // 채용중
+				} else if (rs[i].rcProgCd == "2") {
+					// 채용중
 					itemRcProgCd.classList.add("label", "label-danger");
-				} else if(rs[i].rcProgCd == "3") { // 취소
+				} else if (rs[i].rcProgCd == "3") {
+					// 취소
 					itemRcProgCd.classList.add("label", "label-default");
 				}
 				itemRcProgCd.appendChild(document.createTextNode(rs[i].rcProgNm));
 				tbodyTr.childNodes.item(8).appendChild(itemRcProgCd);
-				tbodyTr.childNodes.item(9).appendChild(document.createTextNode(__toDateFormat(rs[i].rcSdate)+" ~ "+__toDateFormat(rs[i].rcEdate)));
-				
+				tbodyTr.childNodes.item(9).appendChild(document.createTextNode(__toDateFormat(rs[i].rcSdate) + " ~ " + __toDateFormat(rs[i].rcEdate)));
+
 				tbody.appendChild(tbodyTr);
 			}
 			node.appendChild(tbody);
 		}
-		$("#tblStatRcrtReport").span("row","th",0);
+		$("#tblStatRcrtReport").span("row", "th", 0);
 	};
 	__serviceCall(CMM_ACTION, postData, true, cbf, "BLOCK", "tblStatRcrtReport");
 }
