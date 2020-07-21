@@ -21,6 +21,7 @@ function __confirmMsg(pKey) {
 			"RESET":"입력값을 초기화 하시겠습니까?", 
 			"EXPORT_EXCEL":"조회된 목록을 추출하시겠습니까?",
 			"COPY_INFO":"지원자 정보를 복사 하시겠습니까?",
+			"DELETE":"정말로 삭제하시겠습니까?",
 			// alert은 따로 만들기
 			/*
 			"alert001":"코드그룹을 다시 선택해주십시오.",
@@ -958,7 +959,7 @@ function __jsonDateToStr(jsonDate, option) {
 
 /** YYYY:MM:DD가 가능한 형태의 문자를 받아서 구분자를 추가하고 리턴한다.
  * null, undefined, NaN, empty string (“”), 0, false 이면 return;  */
-function __toDateFormat(str, dmt) {
+function __toDateFormat(str, dmt, fmt) {
 	if (!str) { return ""; } 
 	str = str.replace(/[^\d]+/g, "");
 	if(isNull(dmt)) { dmt = "-"; }
@@ -969,8 +970,12 @@ function __toDateFormat(str, dmt) {
 //		str = str.replace(/([0-9]{4})([0-9]{2})/, "$1"+dmt+"$2"+dmt+"XX");
 		str = str.replace(/([0-9]{4})([0-9]{2})/, "$1"+dmt+"$2");
 	} else if(str.length == 4) {
+		if(fmt=="MMDD") {
+			str = str.replace(/([0-9]{2})([0-9]{2})/, "$1"+dmt+"$2");
+		} else {
 //		str = str.replace(/([0-9]{4})/, "$1"+dmt+"XX"+dmt+"XX");
-		str = str.replace(/([0-9]{2})([0-9]{2})/, "$1"+dmt+"$2");
+			str = str.replace(/([0-9]{4})/, "$1");
+		}
 	}
 	return str;
 }

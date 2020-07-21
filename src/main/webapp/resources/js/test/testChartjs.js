@@ -283,7 +283,7 @@ $(document).ready(function(){
 	var ctx = document.getElementById("barChart");
 	_barChart = new Chart(ctx, chartInfo);
 	
-//	Samples.utils.srand(Date.now());
+	Samples.utils.srand(Date.now());
 	
 // _pObj.initVariable();
 // _pObj.initDropDown();
@@ -484,7 +484,8 @@ function selectList2() {
 			}
 			
 			// y축 max값 세팅
-			_barChart.options.scales.yAxes[0].ticks.max = Math.floor((Math.max.apply(null, arrData) + 9)/10)*10;
+			var tempMax = Math.floor((Math.max.apply(null, arrData) + 9)/10)*10;
+			_barChart.options.scales.yAxes[0].ticks.max = tempMax < 10 ? 10 : tempMax;
 			
 			for(var i in arrUniqItvwDate) {
 				var temp = [];
@@ -531,7 +532,7 @@ function selectList2() {
 			
 			// (일자정보) x축 데이터를 생성한다.
 			for(var i in arrUniqItvwDate) {
-				_barChartData.labels.push(__toDateFormat(arrUniqItvwDate[i].right(4), "/"));
+				_barChartData.labels.push(__toDateFormat(arrUniqItvwDate[i].right(4), ".", "MMDD"));
 			}
 			
 			var arrItvwDateCnt = arrUniqItvwDate.length;

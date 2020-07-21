@@ -37,7 +37,7 @@ table.table-common th.th-color-holiday {
 }
 
 table.table-common th.th-bgcolor-today {
-	background-color: gold;
+	background-color: #eccc7b61;
 }
 
 table.table-common td {

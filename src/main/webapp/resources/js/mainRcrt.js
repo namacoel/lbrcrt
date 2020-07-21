@@ -602,7 +602,8 @@ function selectList2() {
 			removeAllDataset();
 
 			// y축 max값 세팅
-			_aChart.options.scales.yAxes[0].ticks.max = Math.floor((Math.max.apply(null, arrData) + 9) / 10) * 10;
+			var tempMax = Math.floor((Math.max.apply(null, arrData) + 9) / 10) * 10;
+			_aChart.options.scales.yAxes[0].ticks.max = tempMax < 10 ? 10 : tempMax;
 
 			for ( var i in arrChartUniqItvwDate) {
 				var temp = [];
@@ -632,7 +633,7 @@ function selectList2() {
 
 			// (일자정보) x축 데이터를 생성한다.
 			for ( var i in arrChartUniqItvwDate) {
-				_aChartData.labels.push(__toDateFormat(arrChartUniqItvwDate[i].right(4), "."));
+				_aChartData.labels.push(__toDateFormat(arrChartUniqItvwDate[i].right(4), ".", "MMDD"));
 			}
 
 			var arrChartUniqItvwDateCnt = arrChartUniqItvwDate.length;
