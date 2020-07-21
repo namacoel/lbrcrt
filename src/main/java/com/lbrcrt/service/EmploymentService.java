@@ -10,4 +10,7 @@ public interface EmploymentService {
 //	public Map<String, Integer> insert(String statement, Map<String, Object> parameter);
 //	public Integer update(String statement, Map<String, Object> parameter);
 //	public Integer delete(String statement, Map<String, Object> parameter);
+	
+	public Map<String, Integer> deleteAplcntForm(String statement, Map<String, Object> parameter) throws Exception;
+	
 }

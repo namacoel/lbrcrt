@@ -149,6 +149,12 @@
 		, BLACKLIST = #{blacklist}
 	WHERE APLCNT_IDX = #{aplcntIdx}
 	</update>
+	
+	<update id="deleteAplcntForm" parameterType="hashmap">
+	DELETE FROM LBAPLCNTLIST WHERE APLCNT_IDX = #{aplcntIdx}
+	</update>
+	
+	
 	<!-- 지원자 정보 조회 -->
 	<select id="selectAplcntForm" parameterType="hashmap" resultType="whashmap">
 	<![CDATA[

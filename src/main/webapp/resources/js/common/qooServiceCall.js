@@ -89,7 +89,7 @@ function __serviceCall(pUrl, pPostData, pAsync, pFnCallback, pBlock, pElementId)
 //			if ($("div#loader").length > 0 ) $("#loader").hide(); // 로더 닫기
 			if(DB_CRUD == "R") {
 				rtnVal = jsonData.length;
-				console.log(jsonData.length +  "건 조회완료..");
+//				console.log(jsonData.length +  "건 조회완료..");
 			} else if(DB_CRUD == "C") {
 				rtnVal = jsonData.cnt;
 //				console.log(rtnVal + "건 등록완료..");
@@ -99,6 +99,9 @@ function __serviceCall(pUrl, pPostData, pAsync, pFnCallback, pBlock, pElementId)
 				rtnVal = jsonData.cnt;
 //				console.log(rtnVal + "건 수정완료..");
 				alert(rtnVal + "건이 수정되었습니다.");
+			} else if(DB_CRUD == "D") {
+				rtnVal = jsonData.cnt;
+				alert(rtnVal + "건이 삭제되었습니다.");
 			} else {
 				console.log(jsonData + "건 처리완료..");
 			}

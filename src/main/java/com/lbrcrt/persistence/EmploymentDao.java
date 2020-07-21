@@ -8,4 +8,9 @@ public interface EmploymentDao<T, C> {
 	
 	/** 전달받은 Parameter를 DB Insert 후, 성공여부 또는 시퀀스를 리턴한다. */
 	public Map<String, Integer> insertAplcntListExcel(String statement, C parameter);
+	
+	/** 지원자 삭제 */
+	public Map<String, Integer> deleteAplcntForm(String statement, C parameter);
+	
 }
+

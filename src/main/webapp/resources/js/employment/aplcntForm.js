@@ -200,6 +200,7 @@ var _btnObj = {
 		            ,["btn btn-default", "btnSave", "fa fa-save", "저장", "NEW|MOD"]
 		            ,["btn btn-default", "btnSaveNew", "fa fa-user-plus", "저장 후 새로작성", "NEW"]
 		            ,["btn btn-default", "btnSaveClose", "fa fa-rocket", "저장 후 닫기", "NEW|MOD"]
+		            ,["btn btn-default", "btnDelete", "fa fa-trash-o", "삭제", "MOD"]
 		            ,["btn btn-default", "btnClose", "fa fa-close", "닫기", "NEW|MOD"]
 //		            ,["btn btn-default", "btnSetDummy", "fa fa-commenting-o", "DUMMY", "NEW"]
 		          ];
@@ -276,6 +277,11 @@ $(document).on("click", "button", function() {
 		gCondSaveAct  = "CLOSE";
 		$("#btnSave").trigger("click");
 		break;
+	case "btnDelete":
+		if(!__confirmMsg("DELETE")) return;
+		deleteData();
+		break;
+		
 	case "btnClose":
 //		if(!confirm(cmmGetAlertMsg("close"))) return;
 		self.close();
@@ -612,6 +618,65 @@ function updateData() {
 	};
 	
 	return __serviceCall(CMM_ACTION, postData, false, cbf, "BLOCK");
+}
+
+/** 지원저 정보 delete 함수 */
+function deleteData() {
+	var postData = new nMap();
+	
+	postData.put("DB_CRUD", "D");
+	postData.put("DB_MAPPER", "aplcntFormMapper");
+	postData.put("DB_REQID", "deleteAplcntForm");
+	const ACTION = context_path+"/employmentAction/deleteAplcntForm";
+
+	// 하위 태그에서 데이터 추출
+//	postData = __putIntoPostData(FORM1, postData);
+	
+	var aplcntIdx = $("#aplcntIdx").val();
+	postData.put("aplcntIdx", aplcntIdx);
+	
+	var cbf = function(rs, elementId) {
+		if(isNull(rs.cnt)) {
+			return;
+		} else {
+			gIsChange = false;
+
+			$('html, body').animate({scrollTop : 0}, 100);
+			
+			// opener가 부서별 채용현황이면 새로고침
+//			if(opener && opener.location.pathname == "/employment/statRcrtStatusPop") opener.window.location.reload(false); // 새로고침
+			if(opener && opener.location.pathname == "/employment/statRcrtStatusPop") opener.$("#itvwDt").trigger("change");
+			if(opener && opener.location.pathname == "/employment/statRcrtStatusPopUpd") opener.$("#itvwDt").trigger("change");
+			
+			// opener의 opener가 부서별 채용현황 팝업이면 재조회 
+			if(opener.opener && opener.opener.location.pathname == "/employment/statRcrtStatus") opener.opener.$("#btnSearch").trigger("click");
+			
+			// 재조회 (재조회 되어도 dataTable의 state를 true로 설정하여 정렬이 유지됨 - 2019.06.28
+			opener.$("#btnSrch").trigger("click");
+			
+			// 2016.10.18.namacoel : 수정후에는 재조회 되지 않도록 변경 요청함.
+//			opener.$("#gridList1").DataTable().order([1,'desc']).draw()
+			/*opener.$("#tblAplcntList tr").each(function() {
+				if($(this).children("td:eq(0)").text() == gAplcntIdx) {
+					this.scrollIntoView();
+					$(this).trigger("click");
+					return false;
+				}
+			});*/
+			/* TODO: 요청사항이 있을 때까진 그냥 둔다. 2016.07.04
+			 * 수정 후 부모창의 지원자 목록을 재조회 하고 수정된 행을 찾아서 선택하는 코드이지만
+			 * 부모창 조회 후, 창이 달라서 비동기 형태로 진행되어서 추가 수정이 필요하다.
+			 * 아마도, 부모창에 값을 보관하는 변수를 만들고, 부모창에서 검색 결과가 완료되는 시점에 이동하도록 해야할 것같다.
+			 */
+			if(gCondSaveAct == "CLOSE") {
+				$("#btnClose").trigger("click");
+				return;
+			}
+//			selectAplcntForm();
+		}
+	};
+	
+	__serviceCall(ACTION, postData, true, cbf, "BLOCK");
 }
 
 /** 지원자 정보 select 함수 */

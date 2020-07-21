@@ -45,4 +45,12 @@ public class EmploymentDaoImpl<T, C> implements EmploymentDao<T, C> {
 		
 		return rsMap;
 	}
+	/** 지원자를 삭제한다. */
+	public Map<String, Integer> deleteAplcntForm(String statement, C parameter) {
+		Map<String, Integer> rsMap = new HashMap<String, Integer>();
+		
+		rsMap.put("cnt", sqlSession.delete(statement, parameter));
+		
+		return rsMap;
+	}
 }

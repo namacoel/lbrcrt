@@ -91,18 +91,21 @@ public class EmploymentServiceImpl implements EmploymentService {
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> mapList = (List<Map<String, Object>>) parameter.get("mapList");
 		
-		
 		for(Map<String, Object> m : mapList) {
 			m.put("loginId", loginId);
 			System.out.println(m.toString());
 			Map<String, Integer> tempRsMap = dao.updateAplcntList(statement, m);
 			totalCnt += tempRsMap.get("cnt");				
 		}
-
 		
 		rsMap.put("cnt", totalCnt);
 		
 		return rsMap;
+	}
+	
+	/** 지원자를 삭제한다. */
+	public Map<String, Integer> deleteAplcntForm(String statement, Map<String, Object> parameter) {		
+		return dao.deleteAplcntForm(statement, parameter);
 	}
 
 }

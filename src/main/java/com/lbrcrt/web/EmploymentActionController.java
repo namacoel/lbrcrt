@@ -111,4 +111,35 @@ public class EmploymentActionController {
 		
 		return entity;	
 	}
+	
+	/** 지원자를 삭제한다.*/
+	@RequestMapping(value="deleteAplcntForm", method=RequestMethod.DELETE)
+	public ResponseEntity<Map<String, Integer>> deleteAplcntForm(@RequestBody Map<String, Object> map) {
+		logger.info("employmentAction/deleteAplcntForm called..");
+				
+		final String SQL = SqlMapName + map.get("DB_MAPPER") + "." + map.get("DB_REQID");
+		
+		Map<String, Integer> rs = new HashMap<String, Integer>();
+		ResponseEntity<Map<String, Integer>> entity = null;
+				
+		logger.info(SQL);
+		logger.info(map.toString());
+		
+		try {
+			/* 추후에 삭제 권한 관리하는 화면으로 대체합시다!! 당장은 특정ID만 체크 */
+			String checkId = cmmUtils.getSessionLoginId();
+			if("300064".equals(checkId)) {
+				logger.info(checkId+" deletes "+map.get("aplcntIdx"));
+				rs = service.deleteAplcntForm(SQL, map);
+				entity = new ResponseEntity<Map<String, Integer>>(rs, HttpStatus.OK);
+			} else {
+				entity = new ResponseEntity<Map<String, Integer>>(rs, HttpStatus.FORBIDDEN);				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			entity = new ResponseEntity<Map<String, Integer>>(rs, HttpStatus.BAD_REQUEST);
+		}
+		
+		return entity;	
+	}
 }
