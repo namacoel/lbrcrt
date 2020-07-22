@@ -218,7 +218,7 @@ function _initGrid1(elementId) {
 		              ]
 		, columns: [
 				{ title: "", 			data: null, searchable: false, orderable: false, defaultContent: "", width:"10px" }
-				  , { title: "순번",		data: "aplcntIdx" }
+				  , { title: "순번",		data: "aplcntIdx"}
 				  , { title: "접수일",	data: "receiptDate", render: __dtMaskDate }
 				  , { title: "사업장",	data: "aplcntBizarea" }
 				  , { title: "부서",		data: "aplcntDept" }
@@ -269,6 +269,7 @@ function _initGrid1(elementId) {
 				  , { title: "블랙",		data: "blacklist" }
 				  , { title: "채용경로1",	data: "recruitSite1" }
 				  , { title: "채용경로2",	data: "recruitSite2", className: "td-ellipsis" }
+				  , { title: "채용경로3",	data: "recommender", className: "td-ellipsis"}
 				  , { title: "서류면접",	data: "docItvw", className: "td-ellipsis" }
 				  , { title: "전화면접",	data: "phoneItvw", className: "td-ellipsis" }
 				  , { title: "대면면접",	data: "ptopItvw", className: "td-ellipsis" }
