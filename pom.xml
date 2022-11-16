@@ -192,7 +192,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.9.10.5</version>
+			<version>2.12.7.1</version>
 		</dependency>
 		<!-- 기존 버전 <version>2.5.4</version> -->
 		<!-- 2016.05.13.파일 업로드 라이브러리 -->
